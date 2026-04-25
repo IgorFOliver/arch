@@ -1,0 +1,16 @@
+{
+  "name": "arch",
+  "version": "1.0.0",
+  "description": "Monorepo arch",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "@igorfoliver",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.1",
+  "dependencies": {
+    "@nestjs/cli": "^11.0.21"
+  }
+}

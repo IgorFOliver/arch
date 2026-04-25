@@ -1,0 +1,28 @@
+{
+  "name": "@arch/config",
+  "version": "0.1.4",
+  "private": true,
+  "description": "MonoRepo Shared configuration",
+  "license": "MIT",
+  "author": "@igorfoliver",
+  "keywords": [
+    "config",
+    "typescript",
+    "jest"
+  ],
+  "scripts": {
+    "build": "tsup"
+  },
+  "exports": {
+    "./typescript": "./dist/tsconfig.json",
+    "./jest": {
+      "types": "./dist/jest.config.d.ts",
+      "import": "./dist/jest.config.mjs",
+      "require": "./dist/jest.config.js"
+    }
+  },
+  "devDependencies": {
+    "jest": "catalog:",
+    "tsup": "8.5.0"
+  }
+}
