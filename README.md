@@ -34,6 +34,28 @@ arch/
    pnpm install
    ```
 
+## Build Management with Turbo
+
+This project uses [Turbo](https://turbo.build/) to manage the build process and optimize task execution across the monorepo. Turbo enables:
+
+- **Parallel Execution**: Runs tasks concurrently across multiple apps when there are no dependencies
+- **Caching**: Caches build outputs to avoid redundant work
+- **Task Orchestration**: Manages dependencies between tasks to ensure correct execution order
+- **Performance**: Significantly reduces build times through incremental builds and smart scheduling
+
+### Turbo Configuration
+
+The `turbo.json` file at the root defines the build pipeline and task dependencies. Tasks are configured to run in the correct order, ensuring that dependencies are built before dependents.
+
+### Running Tasks with Turbo
+
+```bash
+# Using pnpm turbo to run tasks across the monorepo
+pnpm turbo start:dev    # Start all applications in development mode
+pnpm turbo build        # Build all applications
+pnpm turbo lint         # Lint all applications
+```
+
 ## Running the Applications
 
 ### Development
