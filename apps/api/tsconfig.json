@@ -1,6 +1,7 @@
 {
   "extends": "@arch/config/typescript",
   "compilerOptions": {
+    "ignoreDeprecations": "6.0",
     "declaration": true,
     "removeComments": true,
     "isolatedModules": true,

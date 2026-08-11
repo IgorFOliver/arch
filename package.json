@@ -4,6 +4,7 @@
   "description": "Monorepo arch",
   "main": "index.js",
   "scripts": {
+    "storybook": "pnpm --filter @arch/storybook storybook",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

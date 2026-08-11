@@ -8,7 +8,8 @@ A base monorepo template for building full-stack applications with NestJS (API) 
 arch/
 ├── apps/
 │   ├── api/          # NestJS backend application
-│   └── web/          # Next.js frontend application
+│   ├── web/          # Next.js frontend application
+│   └── storybook/    # Storybook component library and design system
 ├── packages/
 │   └── config/       # Shared TypeScript and Jest configurations
 ├── package.json      # Root package.json with workspace configuration
@@ -71,7 +72,14 @@ pnpm --filter web start:dev
 ```
 
 The API will run on `http://localhost:3000` and the Web app on `http://localhost:3001` by default.
+### Storybook
 
+```bash
+# Start Storybook for the component library
+pnpm storybook
+```
+
+Storybook runs on `http://localhost:6006` by default.
 ### Production Build
 
 ```bash
@@ -92,6 +100,7 @@ pnpm --filter web start
 
 ### Root Level
 - `pnpm install` - Install all dependencies
+- `pnpm storybook` - Start Storybook for the component library
 - `pnpm --filter <app> <script>` - Run scripts in specific apps
 
 ### API (apps/api)
