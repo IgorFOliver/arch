@@ -1,18 +1,29 @@
 {
-  "name": "@arch/config",
+  "name": "@4basearch/config",
   "version": "0.1.4",
-  "private": true,
   "description": "MonoRepo Shared configuration",
   "license": "MIT",
   "author": "@igorfoliver",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IgorFOliver/arch.git",
+    "directory": "packages/config"
+  },
   "keywords": [
     "config",
     "typescript",
     "jest"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
   "scripts": {
     "build": "tsup"
   },
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./typescript": "./dist/tsconfig.json",
     "./jest": {

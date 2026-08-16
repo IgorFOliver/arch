@@ -1,5 +1,5 @@
 {
-  "extends": "@arch/config/typescript",
+  "extends": "@4basearch/config/typescript",
   "compilerOptions": {
     "target": "ES2017",
     "module": "esnext",

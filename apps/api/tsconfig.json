@@ -1,5 +1,5 @@
 {
-  "extends": "@arch/config/typescript",
+  "extends": "@4basearch/config/typescript",
   "compilerOptions": {
     "ignoreDeprecations": "5.0",
     "declaration": true,

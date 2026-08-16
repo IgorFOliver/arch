@@ -7,14 +7,17 @@ A base monorepo template for building full-stack applications with NestJS (API) 
 ```
 arch/
 ├── apps/
-│   ├── api/          # NestJS backend application
-│   ├── web/          # Next.js frontend application
-│   └── storybook/    # Storybook component library and design system
+│   ├── api/                  # NestJS backend application
+│   ├── web/                  # Next.js frontend application
+│   └── storybook/            # Storybook component library and design system
 ├── packages/
-│   └── config/       # Shared TypeScript and Jest configurations
-├── package.json      # Root package.json with workspace configuration
-├── pnpm-workspace.yaml  # pnpm workspace configuration
-└── pnpm-lock.yaml    # Lockfile for dependencies
+│   ├── config/                # Shared TypeScript and Jest configurations
+│   ├── furniture-types/       # Shared types for furniture configurations and resolved 3D layouts
+│   ├── furniture-engine/      # Pure logic that resolves a configuration into a positioned layout
+│   └── furniture-renderer/    # React Three Fiber primitives/assemblies that render a resolved layout
+├── package.json               # Root package.json with workspace configuration
+├── pnpm-workspace.yaml         # pnpm workspace configuration
+└── pnpm-lock.yaml              # Lockfile for dependencies
 ```
 
 ## Prerequisites
@@ -118,6 +121,12 @@ pnpm --filter web start
 ### Config Package (packages/config)
 - `pnpm --filter config build` - Build shared configurations
 
+### Furniture Packages (packages/furniture-*)
+- `pnpm --filter @4basearch/furniture-types build` - Build shared furniture types
+- `pnpm --filter @4basearch/furniture-engine build` - Build the layout engine
+- `pnpm --filter @4basearch/furniture-engine test` - Run the layout engine's unit tests
+- `pnpm --filter @4basearch/furniture-renderer build` - Build the React Three Fiber renderer
+
 ## Configuration
 
 ### Shared TypeScript Config
@@ -125,7 +134,7 @@ The `packages/config` provides shared TypeScript configurations that can be exte
 
 ```json
 {
-  "extends": "@arch/config/typescript"
+  "extends": "@4basearch/config/typescript"
 }
 ```
 
@@ -134,9 +143,38 @@ Available for testing configurations:
 
 ```json
 {
-  "extends": "@arch/config/jest"
+  "extends": "@4basearch/config/jest"
 }
 ```
+
+## Furniture Packages
+
+`packages/furniture-types`, `packages/furniture-engine` and `packages/furniture-renderer` form a small pipeline for building furniture-customization UIs with React Three Fiber:
+
+1. **`@4basearch/furniture-types`** — plain TypeScript types (`Dimensions`, `Material`, `FurnitureComponent`, `BookcaseConfiguration`, ...) shared by the other two packages.
+2. **`@4basearch/furniture-engine`** — pure functions (e.g. `buildBookcaseLayout`) that turn a configuration into a resolved `FurnitureLayout` (positioned panels, shelves, dividers, back panel). No React or Three.js involved — just math, so it's unit-tested with Jest.
+3. **`@4basearch/furniture-renderer`** — React Three Fiber primitives (`Panel`, `Shelf`, `Divider`, `BackPanel`) and assemblies (`Module`, `Bookcase`) that render a resolved layout. `Bookcase` is the seam: it calls the engine internally and renders the result.
+
+Storybook hosts every example, including the furniture ones — see `apps/storybook/stories/atomic/templates/furniture/`. There's no `packages/ui`: shared visual components (`Button`, `Input`, `FormField`, `LoginForm`, `Slider`, ...) live directly under `apps/storybook/stories/atomic/`, and apps consume them via a `@ui/*` path alias rather than an installable package.
+
+## Publishing Packages (GitHub Packages)
+
+`packages/config` and the three `furniture-*` packages are published to a private npm registry under the [`4basearch`](https://github.com/orgs/4basearch/packages) GitHub org, so they can be consumed from other repositories (e.g. a separate product repo experimenting with the furniture engine) without living inside this monorepo.
+
+- Scope: `@4basearch/*`. Registry routing lives in the root `.npmrc`:
+  ```
+  @4basearch:registry=https://npm.pkg.github.com
+  //npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
+  ```
+- To publish a new version of a package:
+  ```bash
+  # bump "version" in the package's package.json first, then:
+  export GITHUB_TOKEN=$(gh auth token --hostname github.com --user IgorFOliver)
+  pnpm --filter @4basearch/furniture-engine build
+  cd packages/furniture-engine && pnpm publish --no-git-checks
+  ```
+- Any consuming repo needs the same `@4basearch:registry` mapping and a `GITHUB_TOKEN` with `read:packages` (publishing also needs `write:packages`) exported before `pnpm install`.
+- `workspace:*` internal dependencies (e.g. `furniture-renderer` depending on `furniture-engine`) are automatically rewritten to the exact published version by `pnpm publish`.
 
 ## Authentication & Authorization
 

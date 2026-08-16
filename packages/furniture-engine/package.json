@@ -1,0 +1,45 @@
+{
+  "name": "@4basearch/furniture-engine",
+  "version": "0.1.0",
+  "description": "Pure logic that resolves a furniture configuration into a positioned 3D layout",
+  "license": "MIT",
+  "author": "@igorfoliver",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IgorFOliver/arch.git",
+    "directory": "packages/furniture-engine"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "test": "jest"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@4basearch/furniture-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@4basearch/config": "workspace:*",
+    "@types/jest": "catalog:",
+    "jest": "catalog:",
+    "ts-jest": "29.4.12",
+    "tsup": "8.5.0",
+    "typescript": "catalog:"
+  }
+}

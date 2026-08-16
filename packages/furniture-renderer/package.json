@@ -1,0 +1,54 @@
+{
+  "name": "@4basearch/furniture-renderer",
+  "version": "0.1.0",
+  "description": "React Three Fiber primitives and assemblies that render a resolved furniture layout",
+  "license": "MIT",
+  "author": "@igorfoliver",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IgorFOliver/arch.git",
+    "directory": "packages/furniture-renderer"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@4basearch/furniture-engine": "workspace:*",
+    "@4basearch/furniture-types": "workspace:*"
+  },
+  "peerDependencies": {
+    "@react-three/fiber": "^9.0.0",
+    "react": "^19",
+    "react-dom": "^19",
+    "three": ">=0.170.0"
+  },
+  "devDependencies": {
+    "@4basearch/config": "workspace:*",
+    "@react-three/fiber": "catalog:",
+    "@types/react": "^19",
+    "@types/three": "catalog:",
+    "react": "^19",
+    "react-dom": "^19",
+    "three": "catalog:",
+    "tsup": "8.5.0",
+    "typescript": "catalog:"
+  }
+}

@@ -20,7 +20,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
-    "@arch/config": "workspace:*",
+    "@4basearch/config": "workspace:*",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
