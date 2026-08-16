@@ -1,17 +1,23 @@
 import { AuthUser } from "./store";
 import { LoginFormValues } from "./schema";
 
-export interface LoginResponse {
+export interface SessionResponse {
   user: AuthUser;
 }
 
-// Endpoint not implemented yet in apps/api; base URL is env-driven so it can be wired up later.
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export function auth0LoginUrl(): string {
+  return `${API_URL}/auth/auth0/login`;
+}
+
 export async function login(
   credentials: LoginFormValues,
-): Promise<LoginResponse> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+): Promise<SessionResponse> {
+  const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(credentials),
   });
 
@@ -20,4 +26,27 @@ export async function login(
   }
 
   return response.json();
+}
+
+export async function getSession(): Promise<SessionResponse | null> {
+  const response = await fetch(`${API_URL}/auth/session`, {
+    credentials: "include",
+  });
+
+  if (response.status === 401) {
+    return null;
+  }
+
+  if (!response.ok) {
+    throw new Error("Failed to load the current session.");
+  }
+
+  return response.json();
+}
+
+export async function logout(): Promise<void> {
+  await fetch(`${API_URL}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
 }

@@ -138,6 +138,37 @@ Available for testing configurations:
 }
 ```
 
+## Authentication & Authorization
+
+The `api` app ships a working auth base: local (email/password) login and Auth0 (OIDC) login, both resolving to the same server-side session.
+
+### How it works
+
+- **Session model**: login (local or Auth0) issues an opaque, random token stored in Postgres (`Session` table) and set as an `httpOnly` cookie. Every authenticated request looks the token up in the DB — sessions are instantly revocable (no JWT-style stateless tokens to wait out).
+- **Local login**: `POST /auth/login` validates the password against an `argon2` hash (`AuthService.validateLocal`).
+- **Auth0 login**: `GET /auth/auth0/login` redirects to Auth0's hosted login (Authorization Code flow via `passport-auth0`); `GET /auth/auth0/callback` completes it and creates the same kind of session.
+- **Multi-provider identity**: a `User` can have several `Identity` rows (one per provider). If `/auth/auth0/login` is hit while a local session cookie is already present, the Auth0 identity is linked to that account instead of creating a duplicate — see `UsersService.findOrCreateFromAuth0`.
+- **Authorization**: `User.role` plus a `RolesGuard` + `@Roles()` decorator (`apps/api/src/auth/guards/roles.guard.ts`) are in place for gating routes by role; no routes use it yet.
+- **Guards**: `SessionGuard` protects routes behind an active session; `Auth0AuthGuard` wraps the Auth0 OAuth handshake.
+
+### Setup
+
+1. Copy `apps/api/.env.example` to `apps/api/.env` and fill in `DATABASE_URL` plus, if you want Auth0 login, `AUTH0_DOMAIN` / `AUTH0_CLIENT_ID` / `AUTH0_CLIENT_SECRET` / `AUTH0_CALLBACK_URL` (values come from a **Regular Web Application** in the Auth0 dashboard — the callback URL must also be registered there under Allowed Callback URLs).
+2. Start Postgres: `docker compose -f apps/api/docker-compose.yml up -d`
+3. Run migrations and seed a dev user: `pnpm --filter api db:migrate:dev && pnpm --filter api db:seed`
+4. `AUTH0_DOMAIN`/`AUTH0_CLIENT_ID`/`AUTH0_CLIENT_SECRET` are read once at boot — restart the API after changing them.
+
+### Known follow-ups
+
+The base is functional but not hardened for production yet:
+
+- No rate limiting / brute-force protection on `/auth/login`
+- No CSRF token (currently relying on `SameSite=Lax`)
+- No security headers (helmet, CSP, HSTS)
+- No password reset / forgot-password flow
+- `RolesGuard` exists but no route uses `@Roles()` yet
+- Session TTL is a fixed 7 days with no "logout everywhere" action
+
 ## Development Guidelines
 
 1. **Workspace Dependencies**: Use `pnpm add <package>` at root for shared dependencies, or `pnpm add <package> -F <app>` for app-specific ones.
