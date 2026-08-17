@@ -5,7 +5,7 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component: "Estrutura inicial do Atomic Design para o Storybook.",
+        component: "Initial structure of Atomic Design for Storybook.",
       },
     },
   },

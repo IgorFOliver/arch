@@ -1,6 +1,6 @@
 {
   "name": "@4basearch/furniture-renderer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React Three Fiber primitives and assemblies that render a resolved furniture layout",
   "license": "MIT",
   "author": "@igorfoliver",

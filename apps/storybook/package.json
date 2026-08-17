@@ -12,6 +12,7 @@
     "react-dom": "^19"
   },
   "devDependencies": {
+    "@4basearch/furniture-engine": "workspace:*",
     "@4basearch/furniture-renderer": "workspace:*",
     "@4basearch/furniture-types": "workspace:*",
     "@react-three/drei": "catalog:",

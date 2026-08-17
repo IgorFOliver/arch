@@ -35,7 +35,7 @@ export function LoginPage() {
         href={auth0LoginUrl()}
         className="w-full max-w-md text-center text-sm text-gray-600 underline underline-offset-2 hover:text-gray-900"
       >
-        Entrar com Auth0
+        Sign in with Auth0
       </a>
     </div>
   );
