@@ -14,6 +14,7 @@ import type { User } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { SessionService } from './session.service';
 import { LoginDto } from './dto/login.dto';
+import { SignupDto } from './dto/signup.dto';
 import { SessionGuard } from './guards/session.guard';
 import { Auth0AuthGuard } from './guards/auth0-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -31,6 +32,16 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const user = await this.authService.validateLocal(dto.email, dto.password);
+    await this.authService.createSession(res, user);
+    return { user: this.authService.toPublicUser(user) };
+  }
+
+  @Post('signup')
+  async signup(
+    @Body() dto: SignupDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const user = await this.authService.signup(dto);
     await this.authService.createSession(res, user);
     return { user: this.authService.toPublicUser(user) };
   }

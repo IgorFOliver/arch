@@ -1,52 +1,86 @@
-import { AuthUser } from "./store";
-import { LoginFormValues } from "./schema";
+import { apiFetch, apiUrl, HttpError } from '@/infrastructure/api/http-client';
+import { AuthUser } from './store';
+import { LoginFormValues, SignupFormValues } from './schema';
 
 export interface SessionResponse {
   user: AuthUser;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+export type AuthErrorCode =
+  | 'invalidCredentials'
+  | 'loginFailed'
+  | 'emailTaken'
+  | 'signupFailed'
+  | 'sessionLoadFailed'
+  | 'accountInactive';
 
-export function auth0LoginUrl(): string {
-  return `${API_URL}/auth/auth0/login`;
+export class AuthApiError extends Error {
+  constructor(
+    public readonly code: AuthErrorCode,
+    public readonly status?: number,
+  ) {
+    super(code);
+    this.name = 'AuthApiError';
+  }
 }
 
-export async function login(
-  credentials: LoginFormValues,
-): Promise<SessionResponse> {
-  const response = await fetch(`${API_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(credentials),
-  });
-
-  if (!response.ok) {
-    throw new Error("Invalid email or password.");
+async function withAuthApiError<T>(
+  fallback: AuthErrorCode,
+  statusCodeMap: Partial<Record<number, AuthErrorCode>>,
+  action: () => Promise<T>,
+): Promise<T> {
+  try {
+    return await action();
+  } catch (error) {
+    if (error instanceof HttpError) {
+      throw new AuthApiError(
+        statusCodeMap[error.status] ?? fallback,
+        error.status,
+      );
+    }
+    throw new AuthApiError(fallback);
   }
+}
 
-  return response.json();
+export function auth0LoginUrl(): string {
+  return apiUrl('/auth/auth0/login');
+}
+
+export function login(credentials: LoginFormValues): Promise<SessionResponse> {
+  return withAuthApiError(
+    'loginFailed',
+    { 401: 'invalidCredentials', 403: 'accountInactive' },
+    () =>
+      apiFetch<SessionResponse>('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(credentials),
+      }),
+  );
+}
+
+export function signup(values: SignupFormValues): Promise<SessionResponse> {
+  return withAuthApiError('signupFailed', { 409: 'emailTaken' }, () =>
+    apiFetch<SessionResponse>('/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify(values),
+    }),
+  );
 }
 
 export async function getSession(): Promise<SessionResponse | null> {
-  const response = await fetch(`${API_URL}/auth/session`, {
-    credentials: "include",
-  });
-
-  if (response.status === 401) {
-    return null;
+  try {
+    return await apiFetch<SessionResponse>('/auth/session');
+  } catch (error) {
+    if (error instanceof HttpError && error.status === 401) {
+      return null;
+    }
+    if (error instanceof HttpError && error.status === 403) {
+      throw new AuthApiError('accountInactive', 403);
+    }
+    throw new AuthApiError('sessionLoadFailed');
   }
-
-  if (!response.ok) {
-    throw new Error("Failed to load the current session.");
-  }
-
-  return response.json();
 }
 
 export async function logout(): Promise<void> {
-  await fetch(`${API_URL}/auth/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
+  await apiFetch<void>('/auth/logout', { method: 'POST' });
 }

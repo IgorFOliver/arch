@@ -1,0 +1,30 @@
+{
+  "name": "@4basearch/domain-types",
+  "version": "0.1.0",
+  "description": "Shared domain types used across the API and web apps",
+  "license": "MIT",
+  "author": "@igorfoliver",
+  "private": true,
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup"
+  },
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@4basearch/config": "workspace:*",
+    "tsup": "8.5.0",
+    "typescript": "catalog:"
+  }
+}

@@ -1,10 +1,27 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { AuthProvider, User } from '@prisma/client';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import * as argon2 from 'argon2';
+import { AuthProvider, Role, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 export interface Auth0Profile {
   id: string;
   emails?: { value: string }[];
+}
+
+export interface PublicUser {
+  id: string;
+  email: string;
+  name: string | null;
+  company: string | null;
+  role: Role;
+  active: boolean;
+  createdAt: Date;
 }
 
 @Injectable()
@@ -19,8 +36,66 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
-  createLocalUser(email: string, passwordHash: string): Promise<User> {
-    return this.prisma.user.create({ data: { email, passwordHash } });
+  findAll(): Promise<User[]> {
+    return this.prisma.user.findMany({ orderBy: { createdAt: 'desc' } });
+  }
+
+  createLocalUser(
+    email: string,
+    passwordHash: string,
+    name: string,
+    company?: string,
+  ): Promise<User> {
+    return this.prisma.user.create({
+      data: { email, passwordHash, name, company },
+    });
+  }
+
+  async createUser(dto: CreateUserDto): Promise<User> {
+    const existing = await this.findByEmail(dto.email);
+    if (existing) {
+      throw new ConflictException('A user with this email already exists.');
+    }
+
+    const passwordHash = await argon2.hash(dto.password);
+    return this.prisma.user.create({
+      data: {
+        email: dto.email,
+        passwordHash,
+        name: dto.name,
+        company: dto.company,
+        role: dto.role ?? Role.USER,
+      },
+    });
+  }
+
+  async updateUser(id: string, dto: UpdateUserDto): Promise<User> {
+    const user = await this.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        name: dto.name,
+        company: dto.company,
+        role: dto.role,
+        active: dto.active,
+      },
+    });
+  }
+
+  toPublicUser(user: User): PublicUser {
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      company: user.company,
+      role: user.role,
+      active: user.active,
+      createdAt: user.createdAt,
+    };
   }
 
   /**

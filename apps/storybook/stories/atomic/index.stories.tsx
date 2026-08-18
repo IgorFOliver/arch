@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react';
 
 const meta = {
-  title: "Atomic/Welcome",
+  title: 'Atomic/Welcome',
   parameters: {
     docs: {
       description: {
-        component: "Initial structure of Atomic Design for Storybook.",
+        component: 'Initial structure of Atomic Design for Storybook.',
       },
     },
   },

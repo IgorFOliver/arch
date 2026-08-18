@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -22,6 +23,13 @@ export class SessionGuard implements CanActivate {
     const user = await this.sessionService.validate(token);
     if (!user) {
       throw new UnauthorizedException('Session expired or invalid.');
+    }
+
+    // A deactivated account's session is otherwise still valid (not
+    // expired), so this must be checked separately from session validity:
+    // it blocks every already-authenticated request, not just new logins.
+    if (!user.active) {
+      throw new ForbiddenException('Your account has been blocked.');
     }
 
     request.user = user;

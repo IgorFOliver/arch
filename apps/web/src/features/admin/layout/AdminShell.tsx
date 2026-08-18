@@ -1,0 +1,86 @@
+'use client';
+
+import { ReactNode, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+
+import { AdminLayout } from '@ui/templates/AdminLayout/AdminLayout';
+
+import { useAuthStore } from '@/features/auth/store';
+import { useLogout } from '@/features/auth/use-logout';
+import { useLocaleSwitcher } from '@/shared/hooks/use-locale-switcher';
+import { locales, type Locale } from '@/shared/lib/i18n/config';
+import { useDictionary } from '@/shared/lib/i18n/use-dictionary';
+import { createSidebarSections } from '@/features/admin/navigation/create-sidebar-sections';
+import { findAdminRoute } from '@/features/admin/navigation/find-admin-route';
+
+interface AdminShellProps {
+  lang: Locale;
+  children: ReactNode;
+}
+
+export function AdminShell({ lang, children }: AdminShellProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const dict = useDictionary();
+
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const logoutMutation = useLogout();
+  const switchLocale = useLocaleSwitcher();
+
+  const route = findAdminRoute(pathname);
+  const isAuthorized = Boolean(
+    user && route && route.roles.includes(user.role),
+  );
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (!isAuthenticated) {
+      router.replace('/login');
+      return;
+    }
+
+    if (!isAuthorized) {
+      router.replace('/');
+    }
+  }, [isLoading, isAuthenticated, isAuthorized, router]);
+
+  if (isLoading || !isAuthenticated || !isAuthorized || !user) {
+    return null;
+  }
+
+  const sections = createSidebarSections(dict.shell, user.role);
+
+  const languages = locales.map((code) => ({
+    code,
+    label: dict.common.languageNames[code],
+  }));
+
+  return (
+    <AdminLayout
+      sidebarProps={{
+        user: {
+          name: user.name ?? user.email,
+          role: dict.shell.roles[user.role],
+        },
+        sections,
+        activeHref: route?.href,
+      }}
+      topbarProps={{
+        language: lang,
+        languages,
+        onLanguageChange: (code) => switchLocale(code as Locale),
+        notificationsLabel: dict.shell.topbar.notifications,
+        languageSwitcherLabel: dict.shell.topbar.changeLanguage,
+        logoutLabel: dict.shell.topbar.logOut,
+        notificationCount: 0,
+        onLogout: () => logoutMutation.mutate(),
+      }}
+    >
+      {children}
+    </AdminLayout>
+  );
+}

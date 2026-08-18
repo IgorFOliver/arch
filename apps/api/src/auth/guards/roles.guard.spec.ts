@@ -1,8 +1,7 @@
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { User } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 import { RolesGuard } from './roles.guard';
-import { Role } from '../roles.enum';
 
 describe('RolesGuard', () => {
   let reflector: jest.Mocked<Reflector>;
@@ -12,7 +11,10 @@ describe('RolesGuard', () => {
     id: 'user-1',
     email: 'dev@example.com',
     passwordHash: null,
-    role: 'USER',
+    name: 'Dev User',
+    company: null,
+    role: Role.USER,
+    active: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -42,7 +44,7 @@ describe('RolesGuard', () => {
   it('allows access when the user has one of the required roles', () => {
     reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
 
-    expect(guard.canActivate(contextFor({ ...user, role: 'ADMIN' }))).toBe(
+    expect(guard.canActivate(contextFor({ ...user, role: Role.ADMIN }))).toBe(
       true,
     );
   });

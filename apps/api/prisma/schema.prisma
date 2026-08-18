@@ -12,11 +12,20 @@ enum AuthProvider {
   AUTH0
 }
 
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
 model User {
   id           String     @id @default(uuid())
   email        String     @unique
   passwordHash String?
-  role         String     @default("USER")
+  name         String?
+  company      String?
+  role         Role       @default(USER)
+  active       Boolean    @default(true)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   identities   Identity[]

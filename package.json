@@ -4,8 +4,15 @@
   "description": "Monorepo arch",
   "main": "index.js",
   "scripts": {
+    "api": "pnpm --filter api start:dev",
+    "web": "pnpm --filter web start:dev",
+    "dev": "turbo run start:dev",
     "storybook": "pnpm --filter @4basearch/storybook storybook",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "turbo run lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "@igorfoliver",
@@ -15,6 +22,10 @@
     "@nestjs/cli": "^11.0.21"
   },
   "devDependencies": {
+    "eslint": "^9.18.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.0",
+    "prettier": "^3.4.2",
     "turbo": "^2.9.6"
   }
 }

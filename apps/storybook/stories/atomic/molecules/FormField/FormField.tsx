@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
-import clsx from "clsx";
+import { ReactNode } from 'react';
+import clsx from 'clsx';
 
 interface FormFieldProps {
   label?: string;
@@ -21,7 +21,7 @@ export function FormField({
   className,
 }: FormFieldProps) {
   return (
-    <div className={clsx("w-full", className)}>
+    <div className={clsx('w-full', className)}>
       {label && (
         <label
           htmlFor={htmlFor}

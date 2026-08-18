@@ -1,30 +1,30 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { Button } from "./Button";
+import type { Meta, StoryObj } from '@storybook/react';
+import { Button } from './Button';
 
 const meta = {
-  title: "atomic/Atoms/Button",
+  title: 'atomic/Atoms/Button',
   component: Button,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "padded",
+    layout: 'padded',
   },
   args: {
-    children: "Button",
+    children: 'Button',
   },
   argTypes: {
     variant: {
-      control: "select",
-      options: ["primary", "secondary", "outline", "ghost"],
+      control: 'select',
+      options: ['primary', 'secondary', 'outline', 'ghost'],
     },
     size: {
-      control: "select",
-      options: ["sm", "md", "lg"],
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
     },
     isLoading: {
-      control: "boolean",
+      control: 'boolean',
     },
     fullWidth: {
-      control: "boolean",
+      control: 'boolean',
     },
   },
 } satisfies Meta<typeof Button>;
@@ -37,26 +37,26 @@ export const Primary: Story = {};
 
 export const Secondary: Story = {
   args: {
-    variant: "secondary",
+    variant: 'secondary',
   },
 };
 
 export const Outline: Story = {
   args: {
-    variant: "outline",
+    variant: 'outline',
   },
 };
 
 export const Ghost: Story = {
   args: {
-    variant: "ghost",
+    variant: 'ghost',
   },
 };
 
 export const Loading: Story = {
   args: {
     isLoading: true,
-    loadingText: "Saving...",
+    loadingText: 'Saving...',
   },
 };
 

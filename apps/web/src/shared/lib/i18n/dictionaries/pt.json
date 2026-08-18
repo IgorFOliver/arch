@@ -1,0 +1,112 @@
+{
+  "common": {
+    "languageNames": {
+      "en": "Inglês",
+      "pt": "Português"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar",
+      "submitLabel": "Entrar",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Senha",
+      "noAccount": "Ainda não tem uma conta?",
+      "createOne": "Criar uma conta"
+    },
+    "signup": {
+      "title": "Crie sua conta",
+      "submitLabel": "Criar minha conta",
+      "nameLabel": "Nome",
+      "companyLabel": "Empresa",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Senha",
+      "agreeToTermsLabel": "Eu concordo com os Termos de Serviço e a Política de Privacidade",
+      "haveAccount": "Já tem uma conta?",
+      "signIn": "Entrar"
+    },
+    "validation": {
+      "emailInvalid": "Endereço de e-mail inválido.",
+      "passwordMin": "A senha deve ter pelo menos 8 caracteres.",
+      "nameRequired": "O nome é obrigatório.",
+      "agreeToTermsRequired": "Você precisa concordar com os termos para continuar."
+    },
+    "errors": {
+      "invalidCredentials": "E-mail ou senha inválidos.",
+      "loginFailed": "Algo deu errado ao entrar. Tente novamente.",
+      "emailTaken": "Já existe uma conta com este e-mail.",
+      "signupFailed": "Não foi possível criar sua conta. Tente novamente.",
+      "sessionLoadFailed": "Falha ao carregar a sessão atual.",
+      "accountInactive": "Sua conta foi bloqueada. Entre em contato com um administrador para obter ajuda."
+    }
+  },
+  "shell": {
+    "sidebar": {
+      "main": "Principal",
+      "home": "Início",
+      "users": "Usuários"
+    },
+    "topbar": {
+      "notifications": "Notificações",
+      "changeLanguage": "Alterar idioma",
+      "logOut": "Sair"
+    },
+    "roles": {
+      "USER": "Usuário",
+      "ADMIN": "Administrador",
+      "SUPER_ADMIN": "Super Administrador"
+    }
+  },
+  "home": {
+    "title": "Início"
+  },
+  "users": {
+    "title": "Usuários",
+    "createButton": "Novo usuário",
+    "backToList": "Voltar para usuários",
+    "table": {
+      "name": "Nome",
+      "email": "E-mail",
+      "role": "Função",
+      "status": "Status",
+      "actions": "Ações",
+      "active": "Ativo",
+      "inactive": "Inativo",
+      "edit": "Editar usuário",
+      "block": "Bloquear usuário",
+      "unblock": "Desbloquear usuário",
+      "noResults": "Nenhum usuário encontrado.",
+      "previous": "Anterior",
+      "next": "Próxima",
+      "pagePrefix": "Página",
+      "pageSeparator": "de"
+    },
+    "createPage": {
+      "title": "Novo usuário",
+      "submitLabel": "Criar usuário"
+    },
+    "editPage": {
+      "title": "Editar usuário",
+      "submitLabel": "Salvar alterações"
+    },
+    "form": {
+      "nameLabel": "Nome",
+      "companyLabel": "Empresa",
+      "emailLabel": "E-mail",
+      "passwordLabel": "Senha",
+      "roleLabel": "Função"
+    },
+    "validation": {
+      "nameRequired": "O nome é obrigatório.",
+      "emailInvalid": "Endereço de e-mail inválido.",
+      "passwordMin": "A senha deve ter pelo menos 8 caracteres."
+    },
+    "errors": {
+      "loadUsersFailed": "Falha ao carregar os usuários. Tente novamente.",
+      "userNotFound": "Usuário não encontrado.",
+      "emailTaken": "Já existe um usuário com este e-mail.",
+      "createUserFailed": "Não foi possível criar o usuário. Tente novamente.",
+      "updateUserFailed": "Não foi possível atualizar o usuário. Tente novamente."
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { Logger, Module, Provider } from '@nestjs/common';
+import { forwardRef, Logger, Module, Provider } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
@@ -21,8 +21,9 @@ if (!auth0Configured) {
 const auth0Providers: Provider[] = auth0Configured ? [Auth0Strategy] : [];
 
 @Module({
-  imports: [PassportModule, UsersModule],
+  imports: [PassportModule, forwardRef(() => UsersModule)],
   controllers: [AuthController],
   providers: [AuthService, SessionService, ...auth0Providers],
+  exports: [SessionService],
 })
 export class AuthModule {}

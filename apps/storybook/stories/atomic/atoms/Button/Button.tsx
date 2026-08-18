@@ -1,8 +1,8 @@
-import { ButtonHTMLAttributes, forwardRef, ReactNode } from "react";
-import clsx from "clsx";
+import { ButtonHTMLAttributes, forwardRef, ReactNode } from 'react';
+import clsx from 'clsx';
 
-type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
-type ButtonSize = "sm" | "md" | "lg";
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -15,63 +15,63 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const baseClasses = [
-  "inline-flex",
-  "items-center",
-  "justify-center",
-  "gap-2",
-  "rounded-lg",
-  "border",
-  "font-medium",
-  "transition-colors",
-  "duration-200",
-  "focus-visible:outline-none",
-  "focus-visible:ring-2",
-  "focus-visible:ring-offset-2",
-  "disabled:pointer-events-none",
+  'inline-flex',
+  'items-center',
+  'justify-center',
+  'gap-2',
+  'rounded-lg',
+  'border',
+  'font-medium',
+  'transition-colors',
+  'duration-200',
+  'focus-visible:outline-none',
+  'focus-visible:ring-2',
+  'focus-visible:ring-offset-2',
+  'disabled:pointer-events-none',
 ];
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary: [
-    "border-transparent",
-    "bg-blue-600",
-    "text-white",
-    "hover:bg-blue-700",
-    "active:bg-blue-800",
-    "focus-visible:ring-blue-500",
-  ].join(" "),
+    'border-transparent',
+    'bg-blue-600',
+    'text-white',
+    'hover:bg-blue-700',
+    'active:bg-blue-800',
+    'focus-visible:ring-blue-500',
+  ].join(' '),
 
   secondary: [
-    "border-gray-300",
-    "bg-gray-100",
-    "text-gray-800",
-    "hover:bg-gray-200",
-    "active:bg-gray-300",
-    "focus-visible:ring-gray-500",
-  ].join(" "),
+    'border-gray-300',
+    'bg-gray-100',
+    'text-gray-800',
+    'hover:bg-gray-200',
+    'active:bg-gray-300',
+    'focus-visible:ring-gray-500',
+  ].join(' '),
 
   outline: [
-    "border-blue-600",
-    "bg-transparent",
-    "text-blue-600",
-    "hover:bg-blue-50",
-    "active:bg-blue-100",
-    "focus-visible:ring-blue-500",
-  ].join(" "),
+    'border-blue-600',
+    'bg-transparent',
+    'text-blue-600',
+    'hover:bg-blue-50',
+    'active:bg-blue-100',
+    'focus-visible:ring-blue-500',
+  ].join(' '),
 
   ghost: [
-    "border-transparent",
-    "bg-transparent",
-    "text-gray-700",
-    "hover:bg-gray-100",
-    "active:bg-gray-200",
-    "focus-visible:ring-gray-500",
-  ].join(" "),
+    'border-transparent',
+    'bg-transparent',
+    'text-gray-700',
+    'hover:bg-gray-100',
+    'active:bg-gray-200',
+    'focus-visible:ring-gray-500',
+  ].join(' '),
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: "h-8 px-3 text-sm",
-  md: "h-10 px-4 text-sm",
-  lg: "h-12 px-6 text-base",
+  sm: 'h-8 px-3 text-sm',
+  md: 'h-10 px-4 text-sm',
+  lg: 'h-12 px-6 text-base',
 };
 
 const Spinner = () => (
@@ -102,8 +102,8 @@ const Spinner = () => (
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
-      variant = "primary",
-      size = "md",
+      variant = 'primary',
+      size = 'md',
       fullWidth = false,
       isLoading = false,
       loadingText,
@@ -112,7 +112,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       disabled = false,
       children,
       className,
-      type = "button",
+      type = 'button',
       ...props
     },
     ref,
@@ -129,8 +129,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           baseClasses,
           variantClasses[variant],
           sizeClasses[size],
-          fullWidth && "w-full",
-          isDisabled && "cursor-not-allowed opacity-60",
+          fullWidth && 'w-full',
+          isDisabled && 'cursor-not-allowed opacity-60',
           className,
         )}
         {...props}
@@ -154,4 +154,4 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   },
 );
 
-Button.displayName = "Button";
+Button.displayName = 'Button';

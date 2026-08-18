@@ -24,7 +24,10 @@ describe('SessionService', () => {
     id: 'user-1',
     email: 'dev@example.com',
     passwordHash: 'hashed-password',
+    name: 'Dev User',
+    company: null,
     role: 'USER',
+    active: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   };

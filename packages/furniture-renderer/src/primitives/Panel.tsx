@@ -1,5 +1,5 @@
-import type {} from "@react-three/fiber";
-import { FurnitureComponent } from "@4basearch/furniture-types";
+import type {} from '@react-three/fiber';
+import { FurnitureComponent } from '@4basearch/furniture-types';
 
 export type PanelProps = {
   component: FurnitureComponent;
@@ -10,8 +10,10 @@ export function Panel({ component }: PanelProps) {
 
   return (
     <mesh position={[position.x, position.y, position.z]}>
-      <boxGeometry args={[dimensions.width, dimensions.height, dimensions.depth]} />
-      <meshStandardMaterial color={material.color ?? "#c8a165"} />
+      <boxGeometry
+        args={[dimensions.width, dimensions.height, dimensions.depth]}
+      />
+      <meshStandardMaterial color={material.color ?? '#c8a165'} />
     </mesh>
   );
 }

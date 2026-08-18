@@ -1,31 +1,36 @@
-import { ComponentProps, ReactNode } from "react";
+import { ComponentProps, ReactNode } from 'react';
 
-import { Button } from "../../atoms/Button/Button";
-import { FormField } from "../../molecules/FormField/FormField";
-import { Input, InputProps } from "../../atoms/Input/Input";
+import { Button } from '../../atoms/Button/Button';
+import { FormField } from '../../molecules/FormField/FormField';
+import { Input, InputProps } from '../../atoms/Input/Input';
 
 export interface LoginFormProps {
   logo?: ReactNode;
-  title?: string;
+  title: string;
+
+  emailLabel: string;
+  passwordLabel: string;
 
   emailError?: string;
   passwordError?: string;
   error?: string;
 
-  emailInputProps?: Omit<InputProps, "error">;
-  passwordInputProps?: Omit<InputProps, "error">;
+  emailInputProps?: Omit<InputProps, 'error'>;
+  passwordInputProps?: Omit<InputProps, 'error'>;
 
-  onSubmit?: ComponentProps<"form">["onSubmit"];
+  onSubmit?: ComponentProps<'form'>['onSubmit'];
 
   isLoading?: boolean;
-  submitLabel?: string;
+  submitLabel: string;
 
   className?: string;
 }
 
 export function LoginForm({
   logo,
-  title = "Sign in",
+  title,
+  emailLabel,
+  passwordLabel,
   emailError,
   passwordError,
   error,
@@ -33,13 +38,13 @@ export function LoginForm({
   passwordInputProps,
   onSubmit,
   isLoading = false,
-  submitLabel = "Sign in",
+  submitLabel,
   className,
 }: LoginFormProps) {
   return (
     <form
       onSubmit={onSubmit}
-      className={`w-full max-w-md space-y-6 ${className ?? ""}`}
+      className={`w-full max-w-md space-y-6 ${className ?? ''}`}
     >
       <div className="space-y-3 text-center">
         {logo && <div className="flex justify-center">{logo}</div>}
@@ -58,7 +63,7 @@ export function LoginForm({
 
       <div className="space-y-4">
         <FormField
-          label="Email"
+          label={emailLabel}
           htmlFor="login-email"
           error={emailError}
           required
@@ -67,7 +72,6 @@ export function LoginForm({
             id="login-email"
             type="email"
             autoComplete="email"
-            placeholder="you@example.com"
             fullWidth
             {...emailInputProps}
             error={Boolean(emailError)}
@@ -75,7 +79,7 @@ export function LoginForm({
         </FormField>
 
         <FormField
-          label="Password"
+          label={passwordLabel}
           htmlFor="login-password"
           error={passwordError}
           required
@@ -84,7 +88,6 @@ export function LoginForm({
             id="login-password"
             type="password"
             autoComplete="current-password"
-            placeholder="Enter your password"
             fullWidth
             {...passwordInputProps}
             error={Boolean(passwordError)}

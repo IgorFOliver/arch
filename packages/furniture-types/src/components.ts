@@ -1,5 +1,5 @@
-import { Dimensions } from "./dimensions";
-import { Material } from "./materials";
+import { Dimensions } from './dimensions';
+import { Material } from './materials';
 
 export type Position3D = {
   x: number;
@@ -7,7 +7,11 @@ export type Position3D = {
   z: number;
 };
 
-export type FurnitureComponentType = "panel" | "shelf" | "divider" | "backPanel";
+export type FurnitureComponentType =
+  | 'panel'
+  | 'shelf'
+  | 'divider'
+  | 'backPanel';
 
 export type FurnitureComponent = {
   type: FurnitureComponentType;

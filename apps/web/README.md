@@ -61,15 +61,15 @@ Copy `.env.example` to `.env.local` and adjust as needed:
 cp .env.example .env.local
 ```
 
-| Variable              | Description                          | Default                 |
-| ---------------------- | ------------------------------------- | ------------------------ |
-| `NEXT_PUBLIC_API_URL`  | Base URL of the `api` workspace app  | `http://localhost:3000` |
+| Variable              | Description                         | Default                 |
+| --------------------- | ----------------------------------- | ----------------------- |
+| `NEXT_PUBLIC_API_URL` | Base URL of the `api` workspace app | `http://localhost:3000` |
 
 ## Scripts
 
-| Script                          | Description                    |
-| -------------------------------- | ------------------------------- |
-| `pnpm --filter web start:dev`   | Start the dev server (port 3001) |
-| `pnpm --filter web build`       | Production build                |
-| `pnpm --filter web start`       | Start the production server     |
-| `pnpm --filter web lint`        | Run ESLint                      |
+| Script                        | Description                      |
+| ----------------------------- | -------------------------------- |
+| `pnpm --filter web start:dev` | Start the dev server (port 3001) |
+| `pnpm --filter web build`     | Production build                 |
+| `pnpm --filter web start`     | Start the production server      |
+| `pnpm --filter web lint`      | Run ESLint                       |

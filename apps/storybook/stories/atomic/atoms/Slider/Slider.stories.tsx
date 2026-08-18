@@ -1,6 +1,6 @@
-import { useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react";
-import { Slider, SliderProps } from "./Slider";
+import { useState } from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { Slider, SliderProps } from './Slider';
 
 function ControlledSlider(props: SliderProps) {
   const [value, setValue] = useState(props.value);
@@ -9,11 +9,11 @@ function ControlledSlider(props: SliderProps) {
 }
 
 const meta = {
-  title: "atomic/Atoms/Slider",
+  title: 'atomic/Atoms/Slider',
   component: Slider,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
     value: 30,
@@ -21,24 +21,24 @@ const meta = {
     max: 100,
     step: 1,
     formatValue: (value: number) => `${value}cm`,
-    "aria-label": "Slider value",
+    'aria-label': 'Slider value',
   },
   argTypes: {
     value: {
-      control: { type: "range", min: 0, max: 100, step: 1 },
+      control: { type: 'range', min: 0, max: 100, step: 1 },
     },
     sliderSize: {
-      control: "select",
-      options: ["sm", "md", "lg"],
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
     },
     fullWidth: {
-      control: "boolean",
+      control: 'boolean',
     },
     disabled: {
-      control: "boolean",
+      control: 'boolean',
     },
     showValue: {
-      control: "boolean",
+      control: 'boolean',
     },
   },
   render: (args) => <ControlledSlider {...args} />,
@@ -52,32 +52,32 @@ export const Default: Story = {};
 
 export const Small: Story = {
   args: {
-    sliderSize: "sm",
+    sliderSize: 'sm',
     value: 15,
   },
 };
 
 export const Large: Story = {
   args: {
-    sliderSize: "lg",
+    sliderSize: 'lg',
     value: 70,
   },
 };
 
 export const AlphanumericLabel: Story = {
-  name: "Alphanumeric label",
+  name: 'Alphanumeric label',
   args: {
     value: 2,
     min: 0,
     max: 3,
     step: 1,
-    formatValue: (value: number) => ["P", "M", "G", "GG"][value] ?? `${value}`,
-    "aria-label": "Size",
+    formatValue: (value: number) => ['P', 'M', 'G', 'GG'][value] ?? `${value}`,
+    'aria-label': 'Size',
   },
 };
 
 export const WithoutValueLabel: Story = {
-  name: "Without value label",
+  name: 'Without value label',
   args: {
     showValue: false,
   },
@@ -95,6 +95,6 @@ export const FullWidth: Story = {
     fullWidth: true,
   },
   parameters: {
-    layout: "padded",
+    layout: 'padded',
   },
 };

@@ -1,35 +1,37 @@
-import type { Meta, StoryObj } from "@storybook/react";
-import { LoginForm } from "./LoginForm";
+import type { Meta, StoryObj } from '@storybook/react';
+import { LoginForm } from './LoginForm';
 
 const meta = {
-  title: "atomic/molecules/LoginForm",
+  title: 'atomic/Molecules/LoginForm',
   component: LoginForm,
-  tags: ["autodocs"],
+  tags: ['autodocs'],
   parameters: {
-    layout: "centered",
+    layout: 'centered',
   },
   args: {
-    title: "Sign in",
-    submitLabel: "Sign in",
+    title: 'Sign in',
+    submitLabel: 'Sign in',
+    emailLabel: 'Email',
+    passwordLabel: 'Password',
   },
   argTypes: {
     isLoading: {
-      control: "boolean",
+      control: 'boolean',
     },
     title: {
-      control: "text",
+      control: 'text',
     },
     submitLabel: {
-      control: "text",
+      control: 'text',
     },
     error: {
-      control: "text",
+      control: 'text',
     },
     emailError: {
-      control: "text",
+      control: 'text',
     },
     passwordError: {
-      control: "text",
+      control: 'text',
     },
   },
 } satisfies Meta<typeof LoginForm>;
@@ -48,25 +50,25 @@ export const Loading: Story = {
 
 export const EmailError: Story = {
   args: {
-    emailError: "Please enter a valid email address.",
+    emailError: 'Please enter a valid email address.',
   },
 };
 
 export const PasswordError: Story = {
   args: {
-    passwordError: "Password must be at least 8 characters.",
+    passwordError: 'Password must be at least 8 characters.',
   },
 };
 
 export const ValidationErrors: Story = {
   args: {
-    emailError: "Please enter a valid email address.",
-    passwordError: "Password is required.",
+    emailError: 'Please enter a valid email address.',
+    passwordError: 'Password is required.',
   },
 };
 
 export const ServerError: Story = {
   args: {
-    error: "Invalid email or password.",
+    error: 'Invalid email or password.',
   },
 };

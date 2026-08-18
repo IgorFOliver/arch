@@ -1,9 +1,9 @@
-import { BookcaseConfiguration } from "@4basearch/furniture-types";
-import { buildBookcaseLayout } from "./bookcase";
+import { BookcaseConfiguration } from '@4basearch/furniture-types';
+import { buildBookcaseLayout } from './bookcase';
 
 const configuration: BookcaseConfiguration = {
   depth: 300,
-  material: { id: "oak", name: "Oak", thickness: 18 },
+  material: { id: 'oak', name: 'Oak', thickness: 18 },
   rows: [
     { height: 400, columns: [{ width: 300 }, { width: 300 }] },
     { height: 350, columns: [{ width: 620 }] },
@@ -12,18 +12,21 @@ const configuration: BookcaseConfiguration = {
   ],
 };
 
-describe("buildBookcaseLayout", () => {
-  it("produces one component per structural panel, shelf and divider", () => {
+describe('buildBookcaseLayout', () => {
+  it('produces one component per structural panel, shelf and divider', () => {
     const layout = buildBookcaseLayout(configuration);
 
     const shelves = configuration.rows.length - 1;
-    const dividers = configuration.rows.reduce((sum, row) => sum + (row.columns.length - 1), 0);
+    const dividers = configuration.rows.reduce(
+      (sum, row) => sum + (row.columns.length - 1),
+      0,
+    );
 
     // 2 sides + top + bottom + back + shelves (between rows) + dividers (within rows)
     expect(layout.components).toHaveLength(5 + shelves + dividers);
   });
 
-  it("derives outer dimensions from the sum of rows/columns instead of a fixed size", () => {
+  it('derives outer dimensions from the sum of rows/columns instead of a fixed size', () => {
     const layout = buildBookcaseLayout(configuration);
     const { material } = configuration;
 
@@ -50,11 +53,15 @@ describe("buildBookcaseLayout", () => {
 
     const taller: BookcaseConfiguration = {
       ...configuration,
-      rows: configuration.rows.map((row, index) => (index === 0 ? { ...row, height: row.height + 100 } : row)),
+      rows: configuration.rows.map((row, index) =>
+        index === 0 ? { ...row, height: row.height + 100 } : row,
+      ),
     };
     const tallerLayout = buildBookcaseLayout(taller);
 
-    expect(tallerLayout.outerDimensions.height).toBe(base.outerDimensions.height + 100);
+    expect(tallerLayout.outerDimensions.height).toBe(
+      base.outerDimensions.height + 100,
+    );
   });
 
   it("keeps every component's center within the outer dimensions", () => {
@@ -62,10 +69,14 @@ describe("buildBookcaseLayout", () => {
     const { outerDimensions } = layout;
 
     for (const component of layout.components) {
-      expect(Math.abs(component.position.x)).toBeLessThanOrEqual(outerDimensions.width / 2);
+      expect(Math.abs(component.position.x)).toBeLessThanOrEqual(
+        outerDimensions.width / 2,
+      );
       expect(component.position.y).toBeGreaterThanOrEqual(0);
       expect(component.position.y).toBeLessThanOrEqual(outerDimensions.height);
-      expect(Math.abs(component.position.z)).toBeLessThanOrEqual(outerDimensions.depth);
+      expect(Math.abs(component.position.z)).toBeLessThanOrEqual(
+        outerDimensions.depth,
+      );
     }
   });
 });

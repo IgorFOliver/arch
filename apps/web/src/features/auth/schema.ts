@@ -1,10 +1,34 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const loginSchema = z.object({
-  email: z.email({ error: "Invalid email address." }),
-  password: z
-    .string()
-    .min(8, { error: "Password must be at least 8 characters." }),
-});
+export interface LoginValidationMessages {
+  emailInvalid: string;
+  passwordMin: string;
+}
 
-export type LoginFormValues = z.infer<typeof loginSchema>;
+export function createLoginSchema(messages: LoginValidationMessages) {
+  return z.object({
+    email: z.email({ error: messages.emailInvalid }),
+    password: z.string().min(8, { error: messages.passwordMin }),
+  });
+}
+
+export type LoginFormValues = z.infer<ReturnType<typeof createLoginSchema>>;
+
+export interface SignupValidationMessages {
+  nameRequired: string;
+  emailInvalid: string;
+  passwordMin: string;
+  agreeToTermsRequired: string;
+}
+
+export function createSignupSchema(messages: SignupValidationMessages) {
+  return z.object({
+    name: z.string().min(1, { error: messages.nameRequired }),
+    company: z.string().optional(),
+    email: z.email({ error: messages.emailInvalid }),
+    password: z.string().min(8, { error: messages.passwordMin }),
+    agreeToTerms: z.literal(true, { error: messages.agreeToTermsRequired }),
+  });
+}
+
+export type SignupFormValues = z.infer<ReturnType<typeof createSignupSchema>>;
