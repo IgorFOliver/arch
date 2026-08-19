@@ -4,17 +4,21 @@ import type { Role } from '@4basearch/domain-types';
 import {
   adminNavigation,
   adminNavigationSectionKeys,
+  isAdminNavigationItemVisible,
 } from './admin-navigation';
 
 export function createSidebarSections(
   shellDict: Dictionary['shell'],
-  role: Role,
+  role: Role | null,
+  isPlatformAdmin: boolean,
 ): SidebarSectionData[] {
   return adminNavigationSectionKeys
     .map((sectionKey) => ({
       label: shellDict.sidebar[sectionKey],
       items: adminNavigation[sectionKey]
-        .filter((item) => item.roles.includes(role))
+        .filter((item) =>
+          isAdminNavigationItemVisible(item.scope, role, isPlatformAdmin),
+        )
         .map((item) => ({
           label: shellDict.sidebar[item.key],
           href: item.href,

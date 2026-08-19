@@ -2,4 +2,7 @@ export type Permission =
   | 'users.read'
   | 'users.create'
   | 'users.update'
-  | 'users.delete';
+  | 'users.delete'
+  | 'memberships.read'
+  | 'memberships.create'
+  | 'memberships.revoke';

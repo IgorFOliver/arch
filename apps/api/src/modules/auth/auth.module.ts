@@ -1,6 +1,8 @@
 import { Logger, Module, Provider, forwardRef } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '../users/users.module';
+import { TenantsModule } from '../tenants/tenants.module';
+import { PlatformModule } from '../platform/platform.module';
 import { AuthController } from './presentation/controllers/auth.controller';
 import { SessionGuard } from './presentation/guards/session.guard';
 import { LoginUseCase } from './application/use-cases/login.use-case';
@@ -8,6 +10,8 @@ import { SignupUseCase } from './application/use-cases/signup.use-case';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { ValidateSessionUseCase } from './application/use-cases/validate-session.use-case';
 import { CreateSessionUseCase } from './application/use-cases/create-session.use-case';
+import { SwitchActiveTenantUseCase } from './application/use-cases/switch-active-tenant.use-case';
+import { ListMyTenantsUseCase } from './application/use-cases/list-my-tenants.use-case';
 import { SESSION_REPOSITORY } from './domain/repositories/session.repository';
 import { PrismaSessionRepository } from './infrastructure/persistence/prisma/prisma-session.repository';
 import { Auth0Strategy } from './infrastructure/strategies/auth0.strategy';
@@ -27,7 +31,12 @@ if (!auth0Configured) {
 const auth0Providers: Provider[] = auth0Configured ? [Auth0Strategy] : [];
 
 @Module({
-  imports: [PassportModule, forwardRef(() => UsersModule)],
+  imports: [
+    PassportModule,
+    forwardRef(() => UsersModule),
+    TenantsModule,
+    PlatformModule,
+  ],
   controllers: [AuthController],
   providers: [
     LoginUseCase,
@@ -35,6 +44,8 @@ const auth0Providers: Provider[] = auth0Configured ? [Auth0Strategy] : [];
     LogoutUseCase,
     ValidateSessionUseCase,
     CreateSessionUseCase,
+    SwitchActiveTenantUseCase,
+    ListMyTenantsUseCase,
     SessionGuard,
     { provide: SESSION_REPOSITORY, useClass: PrismaSessionRepository },
     ...auth0Providers,

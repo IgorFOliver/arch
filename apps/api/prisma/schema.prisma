@@ -18,18 +18,42 @@ enum Role {
   SUPER_ADMIN
 }
 
+// `active` here is the platform-wide ban flag checked at login/session
+// validation — unrelated to tenancy. Whether a user can act *within* a
+// given tenant is entirely a Membership concern (status + role); there is
+// deliberately no `role` field here anymore — Membership.role is the only
+// authority for tenant-scoped authorization.
 model User {
-  id           String     @id @default(uuid())
-  email        String     @unique
-  passwordHash String?
-  name         String?
-  company      String?
-  role         Role       @default(USER)
-  active       Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  identities   Identity[]
-  sessions     Session[]
+  id            String         @id @default(uuid())
+  email         String         @unique
+  passwordHash  String?
+  name          String?
+  company       String?
+  active        Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  identities    Identity[]
+  sessions      Session[]
+  memberships   Membership[]
+  platformAdmin PlatformAdmin?
+}
+
+enum PlatformRole {
+  PLATFORM_ADMIN
+}
+
+// Platform Scope authorization — sits above Tenant Scope, entirely
+// independent of Membership. Modeled as a grant relationship (like
+// Membership grants Tenant-scope authority) rather than a field on User,
+// so it can never be confused with — or accidentally read as — a
+// tenant-scoped role: a user with zero Memberships can still hold this.
+model PlatformAdmin {
+  id        String       @id @default(uuid())
+  userId    String       @unique
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      PlatformRole @default(PLATFORM_ADMIN)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 }
 
 model Identity {
@@ -48,6 +72,114 @@ model Session {
   tokenHash String   @unique
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  // The Current/Active Tenant — a plain pointer, not a source of trust by
+  // itself. Every request re-validates it against Membership before
+  // granting anything, so a Membership/Role change (or Tenant suspension)
+  // takes effect immediately, on the very next request, with no need to
+  // wait out a token's lifetime. No relation on purpose: switching or
+  // suspending a Tenant must never be blocked by, or cascade into, a
+  // stale session row.
+  activeTenantId String?
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+}
+
+enum TenantStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model Tenant {
+  id          String       @id @default(uuid())
+  name        String
+  slug        String       @unique
+  status      TenantStatus @default(ACTIVE)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  memberships Membership[]
+  products    Product[]
+}
+
+enum MembershipStatus {
+  ACTIVE
+  REVOKED
+}
+
+model Membership {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantId  String
+  tenant    Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  role      Role             @default(USER)
+  status    MembershipStatus @default(ACTIVE)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  // One row per (user, tenant) pair, ever — revoking/reinviting flips
+  // `status` on the same row instead of inserting a duplicate, which is
+  // what makes "no two active memberships for the same tenant" true by
+  // construction rather than by application-level checking alone.
+  @@unique([userId, tenantId])
+  // Serves "active members of tenant X" directly; "memberships of user X"
+  // is already served by the leading column of the unique index above.
+  @@index([tenantId, status])
+}
+
+enum ProductVersionStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// Intentionally no business/content fields yet (name, dimensions,
+// materials, ...) — this migration only establishes tenant ownership and
+// the draft/published/archived version lifecycle ahead of the real
+// Product CRUD, so that adding tenancy later doesn't require a second
+// migration.
+model Product {
+  id        String           @id @default(uuid())
+  tenantId  String
+  tenant    Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  versions  ProductVersion[]
+
+  @@index([tenantId, createdAt])
+}
+
+// Architectural decision (not yet enforced by a constraint): a Product
+// should have at most one PUBLISHED version at a time — publishing a new
+// version is expected to archive the previously published one. See
+// apps/api/ARCHITECTURE.md.
+model ProductVersion {
+  id            String               @id @default(uuid())
+  productId     String
+  product       Product              @relation(fields: [productId], references: [id], onDelete: Cascade)
+  versionNumber Int
+  status        ProductVersionStatus @default(DRAFT)
+  publishedAt   DateTime?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  @@unique([productId, versionNumber])
+  @@index([productId, status])
+}
+
+// No `@relation` to Tenant/User on purpose: an audit trail must survive
+// independently of the entities it references (no cascade delete should
+// ever be able to erase history), so tenantId/actorUserId are plain
+// indexed strings, not enforced foreign keys.
+model AuditLog {
+  id           String   @id @default(uuid())
+  tenantId     String?
+  actorUserId  String?
+  action       String
+  resourceType String
+  resourceId   String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId, createdAt])
+  @@index([resourceType, resourceId])
 }

@@ -1,7 +1,6 @@
 import { ConflictException } from '@nestjs/common';
 import { expect } from '@jest/globals';
 import * as argon2 from 'argon2';
-import { Role } from '@4basearch/domain-types';
 import { SignupUseCase } from './signup.use-case';
 import { CreateSessionUseCase } from './create-session.use-case';
 import type { UserRepository } from '../../../users/domain/repositories/user.repository';
@@ -20,7 +19,6 @@ describe('SignupUseCase', () => {
     passwordHash: 'hashed-password',
     name: 'Dev User',
     company: null,
-    role: Role.USER,
     active: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -40,9 +38,10 @@ describe('SignupUseCase', () => {
     userRepository = {
       findById: jest.fn(),
       findByEmail: jest.fn(),
-      findAll: jest.fn(),
       create: jest.fn(),
-      update: jest.fn(),
+      updateMember: jest.fn(),
+      findMemberById: jest.fn(),
+      findMembers: jest.fn(),
       findIdentity: jest.fn(),
       linkIdentity: jest.fn(),
       createFromAuth0: jest.fn(),

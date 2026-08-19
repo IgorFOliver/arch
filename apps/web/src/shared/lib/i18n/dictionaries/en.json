@@ -44,7 +44,8 @@
     "sidebar": {
       "main": "Main",
       "home": "Home",
-      "users": "Users"
+      "users": "Users",
+      "tenants": "Tenants"
     },
     "topbar": {
       "notifications": "Notifications",
@@ -54,7 +55,8 @@
     "roles": {
       "USER": "User",
       "ADMIN": "Admin",
-      "SUPER_ADMIN": "Super Admin"
+      "SUPER_ADMIN": "Super Admin",
+      "PLATFORM_ADMIN": "Platform Admin"
     }
   },
   "home": {
@@ -107,6 +109,52 @@
       "emailTaken": "A user with this email already exists.",
       "createUserFailed": "Could not create the user. Please try again.",
       "updateUserFailed": "Could not update the user. Please try again."
+    }
+  },
+  "tenants": {
+    "title": "Tenants",
+    "createButton": "New tenant",
+    "backToList": "Back to tenants",
+    "table": {
+      "name": "Name",
+      "slug": "Slug",
+      "status": "Status",
+      "actions": "Actions",
+      "active": "Active",
+      "suspended": "Suspended",
+      "edit": "Edit tenant",
+      "activate": "Activate tenant",
+      "suspend": "Suspend tenant",
+      "noResults": "No tenants found.",
+      "previous": "Previous",
+      "next": "Next",
+      "pagePrefix": "Page",
+      "pageSeparator": "of"
+    },
+    "createPage": {
+      "title": "New tenant",
+      "submitLabel": "Create tenant"
+    },
+    "editPage": {
+      "title": "Edit tenant",
+      "submitLabel": "Save changes"
+    },
+    "form": {
+      "nameLabel": "Name",
+      "slugLabel": "Slug"
+    },
+    "validation": {
+      "nameRequired": "Name is required.",
+      "slugRequired": "Slug is required.",
+      "slugInvalid": "Slug must be lowercase, alphanumeric, and hyphen-separated."
+    },
+    "errors": {
+      "loadTenantsFailed": "Failed to load tenants. Please try again.",
+      "tenantNotFound": "Tenant not found.",
+      "slugTaken": "A tenant with this slug already exists.",
+      "createTenantFailed": "Could not create the tenant. Please try again.",
+      "updateTenantFailed": "Could not update the tenant. Please try again.",
+      "statusUpdateFailed": "Could not update the tenant's status. Please try again."
     }
   }
 }

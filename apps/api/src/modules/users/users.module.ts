@@ -1,6 +1,8 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { AuthorizationModule } from '../authorization/authorization.module';
+import { TenantsModule } from '../tenants/tenants.module';
+import { AuditModule } from '../audit/audit.module';
 import { UsersController } from './presentation/controllers/users.controller';
 import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
 import { UpdateUserUseCase } from './application/use-cases/update-user.use-case';
@@ -11,7 +13,12 @@ import { USER_REPOSITORY } from './domain/repositories/user.repository';
 import { PrismaUserRepository } from './infrastructure/persistence/prisma/prisma-user.repository';
 
 @Module({
-  imports: [forwardRef(() => AuthModule), AuthorizationModule],
+  imports: [
+    forwardRef(() => AuthModule),
+    AuthorizationModule,
+    TenantsModule,
+    AuditModule,
+  ],
   controllers: [UsersController],
   providers: [
     CreateUserUseCase,

@@ -16,26 +16,35 @@ export class SessionGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
+    const request = context
+      .switchToHttp()
+      .getRequest<
+        Request & { activeTenantId?: string | null; sessionToken?: string }
+      >();
     const token = readSessionCookie(request);
 
     if (!token) {
       throw new UnauthorizedException('No active session.');
     }
 
-    const user = await this.validateSessionUseCase.execute(token);
-    if (!user) {
+    const session = await this.validateSessionUseCase.execute(token);
+    if (!session) {
       throw new UnauthorizedException('Session expired or invalid.');
     }
 
     // A deactivated account's session is otherwise still valid (not
     // expired), so this must be checked separately from session validity:
     // it blocks every already-authenticated request, not just new logins.
-    if (!user.active) {
+    if (!session.user.active) {
       throw new ForbiddenException('Your account has been blocked.');
     }
 
-    request.user = user;
+    request.user = session.user;
+    // The Current Tenant, straight from the session row — TenantGuard
+    // reads this instead of re-deriving anything, and the switch-tenant
+    // endpoint needs the raw token to update the same session in place.
+    request.activeTenantId = session.activeTenantId;
+    request.sessionToken = token;
     return true;
   }
 }

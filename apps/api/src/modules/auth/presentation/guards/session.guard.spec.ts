@@ -4,7 +4,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request } from 'express';
-import { Role } from '@4basearch/domain-types';
 import { SessionGuard } from './session.guard';
 import { ValidateSessionUseCase } from '../../application/use-cases/validate-session.use-case';
 import type { User } from '../../../users/domain/entities/user.entity';
@@ -19,7 +18,6 @@ describe('SessionGuard', () => {
     passwordHash: null,
     name: 'Dev User',
     company: null,
-    role: Role.USER,
     active: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -57,8 +55,8 @@ describe('SessionGuard', () => {
 
   it('denies access when the account has been deactivated', async () => {
     validateSessionUseCase.execute.mockResolvedValue({
-      ...user,
-      active: false,
+      user: { ...user, active: false },
+      activeTenantId: null,
     });
 
     await expect(guard.canActivate(contextFor('token'))).rejects.toThrow(
@@ -66,9 +64,16 @@ describe('SessionGuard', () => {
     );
   });
 
-  it('allows access and attaches the user for an active account', async () => {
-    validateSessionUseCase.execute.mockResolvedValue(user);
-    const request: Partial<Request> & { user?: User } = {
+  it('allows access and attaches the user + activeTenantId for an active account', async () => {
+    validateSessionUseCase.execute.mockResolvedValue({
+      user,
+      activeTenantId: 'tenant-a',
+    });
+    const request: Partial<Request> & {
+      user?: User;
+      activeTenantId?: string | null;
+      sessionToken?: string;
+    } = {
       cookies: { arch_session: 'token' },
     };
     const context = {
@@ -77,5 +82,7 @@ describe('SessionGuard', () => {
 
     await expect(guard.canActivate(context)).resolves.toBe(true);
     expect(request.user).toEqual(user);
+    expect(request.activeTenantId).toBe('tenant-a');
+    expect(request.sessionToken).toBe('token');
   });
 });

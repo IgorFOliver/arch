@@ -8,11 +8,22 @@ import type { Permission } from './permission';
  */
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   [Role.USER]: [],
-  [Role.ADMIN]: ['users.read', 'users.create', 'users.update', 'users.delete'],
+  [Role.ADMIN]: [
+    'users.read',
+    'users.create',
+    'users.update',
+    'users.delete',
+    'memberships.read',
+    'memberships.create',
+    'memberships.revoke',
+  ],
   [Role.SUPER_ADMIN]: [
     'users.read',
     'users.create',
     'users.update',
     'users.delete',
+    'memberships.read',
+    'memberships.create',
+    'memberships.revoke',
   ],
 };

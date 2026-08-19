@@ -8,10 +8,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { Role } from '@prisma/client';
+import { Role } from '@4basearch/domain-types';
 import { SessionGuard } from '../../../auth/presentation/guards/session.guard';
+import { TenantGuard } from '../../../tenants/presentation/guards/tenant.guard';
 import { RolesGuard } from '../../../authorization/presentation/guards/roles.guard';
 import { Roles } from '../../../authorization/presentation/decorators/roles.decorator';
+import { CurrentMembership } from '../../../tenants/presentation/decorators/current-membership.decorator';
+import type { Membership } from '../../../tenants/domain/entities/membership.entity';
 import { CreateUserUseCase } from '../../application/use-cases/create-user.use-case';
 import { UpdateUserUseCase } from '../../application/use-cases/update-user.use-case';
 import { ListUsersUseCase } from '../../application/use-cases/list-users.use-case';
@@ -19,9 +22,13 @@ import { GetUserUseCase } from '../../application/use-cases/get-user.use-case';
 import { CreateUserDto } from '../../application/dto/create-user.dto';
 import { UpdateUserDto } from '../../application/dto/update-user.dto';
 import { ListUsersQueryDto } from '../../application/dto/list-users-query.dto';
-import { toPublicUser } from '../../application/mappers/user.mapper';
+import { toPublicUserFromTenantScoped } from '../../application/mappers/user.mapper';
 
-@UseGuards(SessionGuard, RolesGuard)
+// TENANT_SCOPED + AUTHORIZED: SessionGuard authenticates, TenantGuard
+// resolves the active tenant + Membership, RolesGuard authorizes against
+// that Membership's role — in that order, each depending on the one
+// before it having already populated the request.
+@UseGuards(SessionGuard, TenantGuard, RolesGuard)
 @Roles(Role.ADMIN, Role.SUPER_ADMIN)
 @Controller('users')
 export class UsersController {
@@ -33,10 +40,16 @@ export class UsersController {
   ) {}
 
   @Get()
-  async findAll(@Query() query: ListUsersQueryDto) {
-    const { users, total } = await this.listUsersUseCase.execute(query);
+  async findAll(
+    @CurrentMembership() membership: Membership,
+    @Query() query: ListUsersQueryDto,
+  ) {
+    const { users, total } = await this.listUsersUseCase.execute(
+      membership.tenantId,
+      query,
+    );
     return {
-      users: users.map(toPublicUser),
+      users: users.map(toPublicUserFromTenantScoped),
       meta: {
         page: query.page,
         pageSize: query.pageSize,
@@ -47,20 +60,30 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const user = await this.getUserUseCase.execute(id);
-    return { user: toPublicUser(user) };
+  async findOne(
+    @CurrentMembership() membership: Membership,
+    @Param('id') id: string,
+  ) {
+    const user = await this.getUserUseCase.execute(membership.tenantId, id);
+    return { user: toPublicUserFromTenantScoped(user) };
   }
 
   @Post()
-  async create(@Body() dto: CreateUserDto) {
-    const user = await this.createUserUseCase.execute(dto);
-    return { user: toPublicUser(user) };
+  async create(
+    @CurrentMembership() membership: Membership,
+    @Body() dto: CreateUserDto,
+  ) {
+    const user = await this.createUserUseCase.execute(membership, dto);
+    return { user: toPublicUserFromTenantScoped(user) };
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    const user = await this.updateUserUseCase.execute(id, dto);
-    return { user: toPublicUser(user) };
+  async update(
+    @CurrentMembership() membership: Membership,
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+  ) {
+    const user = await this.updateUserUseCase.execute(membership, id, dto);
+    return { user: toPublicUserFromTenantScoped(user) };
   }
 }

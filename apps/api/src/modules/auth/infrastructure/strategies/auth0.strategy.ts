@@ -35,9 +35,10 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
   ): Promise<void> {
     try {
       const token = readSessionCookie(req);
-      const currentUser = token
-        ? ((await this.validateSessionUseCase.execute(token)) ?? undefined)
-        : undefined;
+      const session = token
+        ? await this.validateSessionUseCase.execute(token)
+        : null;
+      const currentUser = session?.user ?? undefined;
 
       const user = await this.findOrCreateFromAuth0UseCase.execute(
         { id: profile.id, emails: profile.emails },

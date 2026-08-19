@@ -44,7 +44,8 @@
     "sidebar": {
       "main": "Principal",
       "home": "Início",
-      "users": "Usuários"
+      "users": "Usuários",
+      "tenants": "Tenants"
     },
     "topbar": {
       "notifications": "Notificações",
@@ -54,7 +55,8 @@
     "roles": {
       "USER": "Usuário",
       "ADMIN": "Administrador",
-      "SUPER_ADMIN": "Super Administrador"
+      "SUPER_ADMIN": "Super Administrador",
+      "PLATFORM_ADMIN": "Administrador da Plataforma"
     }
   },
   "home": {
@@ -107,6 +109,52 @@
       "emailTaken": "Já existe um usuário com este e-mail.",
       "createUserFailed": "Não foi possível criar o usuário. Tente novamente.",
       "updateUserFailed": "Não foi possível atualizar o usuário. Tente novamente."
+    }
+  },
+  "tenants": {
+    "title": "Tenants",
+    "createButton": "Novo tenant",
+    "backToList": "Voltar para tenants",
+    "table": {
+      "name": "Nome",
+      "slug": "Slug",
+      "status": "Status",
+      "actions": "Ações",
+      "active": "Ativo",
+      "suspended": "Suspenso",
+      "edit": "Editar tenant",
+      "activate": "Ativar tenant",
+      "suspend": "Suspender tenant",
+      "noResults": "Nenhum tenant encontrado.",
+      "previous": "Anterior",
+      "next": "Próxima",
+      "pagePrefix": "Página",
+      "pageSeparator": "de"
+    },
+    "createPage": {
+      "title": "Novo tenant",
+      "submitLabel": "Criar tenant"
+    },
+    "editPage": {
+      "title": "Editar tenant",
+      "submitLabel": "Salvar alterações"
+    },
+    "form": {
+      "nameLabel": "Nome",
+      "slugLabel": "Slug"
+    },
+    "validation": {
+      "nameRequired": "O nome é obrigatório.",
+      "slugRequired": "O slug é obrigatório.",
+      "slugInvalid": "O slug deve ser minúsculo, alfanumérico e separado por hífens."
+    },
+    "errors": {
+      "loadTenantsFailed": "Falha ao carregar os tenants. Tente novamente.",
+      "tenantNotFound": "Tenant não encontrado.",
+      "slugTaken": "Já existe um tenant com este slug.",
+      "createTenantFailed": "Não foi possível criar o tenant. Tente novamente.",
+      "updateTenantFailed": "Não foi possível atualizar o tenant. Tente novamente.",
+      "statusUpdateFailed": "Não foi possível atualizar o status do tenant. Tente novamente."
     }
   }
 }

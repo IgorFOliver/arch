@@ -14,6 +14,7 @@ export * from './molecules/LoginForm/LoginForm';
 export * from './molecules/Select/Select';
 export * from './molecules/SignupForm/SignupForm';
 export * from './molecules/Table/Table';
+export * from './molecules/TenantForm/TenantForm';
 export * from './molecules/UserForm/UserForm';
 
 export * from './organisms/DataTable/DataTable';

@@ -1,6 +1,5 @@
 import { ConflictException } from '@nestjs/common';
 import { expect } from '@jest/globals';
-import { Role } from '@4basearch/domain-types';
 import { FindOrCreateFromAuth0UseCase } from './find-or-create-from-auth0.use-case';
 import type { UserRepository } from '../../domain/repositories/user.repository';
 import type { User } from '../../domain/entities/user.entity';
@@ -15,7 +14,6 @@ describe('FindOrCreateFromAuth0UseCase', () => {
     passwordHash: null,
     name: 'Dev User',
     company: null,
-    role: Role.USER,
     active: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -27,9 +25,10 @@ describe('FindOrCreateFromAuth0UseCase', () => {
     userRepository = {
       findById: jest.fn(),
       findByEmail: jest.fn(),
-      findAll: jest.fn(),
       create: jest.fn(),
-      update: jest.fn(),
+      updateMember: jest.fn(),
+      findMemberById: jest.fn(),
+      findMembers: jest.fn(),
       findIdentity: jest.fn(),
       linkIdentity: jest.fn(),
       createFromAuth0: jest.fn(),

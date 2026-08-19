@@ -11,6 +11,7 @@ import { locales, type Locale } from '@/shared/lib/i18n/config';
 import { useDictionary } from '@/shared/lib/i18n/use-dictionary';
 import { createSidebarSections } from '@/features/admin/navigation/create-sidebar-sections';
 import { findAdminRoute } from '@/features/admin/navigation/find-admin-route';
+import { isAdminNavigationItemVisible } from '@/features/admin/navigation/admin-navigation';
 
 interface AdminShellProps {
   lang: Locale;
@@ -29,7 +30,9 @@ export function AdminShell({ lang, children }: AdminShellProps) {
 
   const route = findAdminRoute(pathname);
   const isAuthorized = Boolean(
-    user && route && route.roles.includes(user.role),
+    user &&
+    route &&
+    isAdminNavigationItemVisible(route.scope, user.role, user.isPlatformAdmin),
   );
 
   useEffect(() => {
@@ -49,7 +52,14 @@ export function AdminShell({ lang, children }: AdminShellProps) {
     return null;
   }
 
-  const sections = createSidebarSections(dict.shell, user.role);
+  const sections = createSidebarSections(
+    dict.shell,
+    user.role,
+    user.isPlatformAdmin,
+  );
+  const roleLabel = user.role
+    ? dict.shell.roles[user.role]
+    : dict.shell.roles.PLATFORM_ADMIN;
 
   const languages = locales.map((code) => ({
     code,
@@ -61,7 +71,7 @@ export function AdminShell({ lang, children }: AdminShellProps) {
       sidebarProps={{
         user: {
           name: user.name ?? user.email,
-          role: dict.shell.roles[user.role],
+          role: roleLabel,
         },
         sections,
         activeHref: route?.href,

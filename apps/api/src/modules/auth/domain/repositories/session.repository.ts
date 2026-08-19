@@ -3,10 +3,25 @@ export const SESSION_REPOSITORY = Symbol('SESSION_REPOSITORY');
 export interface CreatedSession {
   token: string;
   expiresAt: Date;
+  activeTenantId: string | null;
+}
+
+export interface SessionRecord {
+  userId: string;
+  activeTenantId: string | null;
 }
 
 export interface SessionRepository {
-  create(userId: string): Promise<CreatedSession>;
-  findUserIdByToken(token: string): Promise<string | null>;
+  create(
+    userId: string,
+    activeTenantId: string | null,
+  ): Promise<CreatedSession>;
+  findByToken(token: string): Promise<SessionRecord | null>;
+  /**
+   * The Current Tenant is switched in place, on the same session row —
+   * never by minting a new token — so the change takes effect on this
+   * session's very next request, with nothing for the client to update.
+   */
+  setActiveTenant(token: string, tenantId: string | null): Promise<void>;
   revoke(token: string): Promise<void>;
 }

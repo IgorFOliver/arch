@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma, type User as PrismaUser } from '@prisma/client';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Prisma,
+  type Membership as PrismaMembership,
+  type User as PrismaUser,
+} from '@prisma/client';
 import { PrismaService } from '../../../../../prisma/prisma.service';
 import type {
   CreateUserData,
-  ListUsersFilter,
+  ListTenantMembersFilter,
+  TenantScopedUser,
   UpdateUserData,
   UserRepository,
 } from '../../../domain/repositories/user.repository';
@@ -19,10 +24,23 @@ function toDomainUser(user: PrismaUser): User {
     passwordHash: user.passwordHash,
     name: user.name,
     company: user.company,
-    role: user.role,
     active: user.active,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+  };
+}
+
+function toTenantScopedUser(
+  membership: PrismaMembership & { user: PrismaUser },
+): TenantScopedUser {
+  return {
+    id: membership.user.id,
+    email: membership.user.email,
+    name: membership.user.name,
+    company: membership.user.company,
+    role: membership.role,
+    active: membership.status === 'ACTIVE',
+    createdAt: membership.user.createdAt,
   };
 }
 
@@ -40,37 +58,6 @@ export class PrismaUserRepository implements UserRepository {
     return user ? toDomainUser(user) : null;
   }
 
-  async findAll(
-    filter: ListUsersFilter,
-  ): Promise<{ users: User[]; total: number }> {
-    const { page, pageSize, search, role, active, sortBy, sortDir } = filter;
-
-    const where: Prisma.UserWhereInput = {
-      ...(role ? { role } : {}),
-      ...(active !== undefined ? { active } : {}),
-      ...(search
-        ? {
-            OR: [
-              { name: { contains: search, mode: 'insensitive' } },
-              { email: { contains: search, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
-    };
-
-    const [users, total] = await this.prisma.$transaction([
-      this.prisma.user.findMany({
-        where,
-        orderBy: { [sortBy]: sortDir },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      }),
-      this.prisma.user.count({ where }),
-    ]);
-
-    return { users: users.map(toDomainUser), total };
-  }
-
   async create(data: CreateUserData): Promise<User> {
     const user = await this.prisma.user.create({
       data: {
@@ -78,23 +65,92 @@ export class PrismaUserRepository implements UserRepository {
         passwordHash: data.passwordHash,
         name: data.name,
         company: data.company,
-        role: data.role,
       },
     });
     return toDomainUser(user);
   }
 
-  async update(id: string, data: UpdateUserData): Promise<User> {
-    const user = await this.prisma.user.update({
-      where: { id },
-      data: {
-        name: data.name,
-        company: data.company,
-        role: data.role,
-        active: data.active,
-      },
+  async updateMember(
+    tenantId: string,
+    userId: string,
+    data: UpdateUserData,
+  ): Promise<User> {
+    // `updateMany` with a relational filter, not `update({ where: { id } })`
+    // — the WHERE clause itself proves the user has a Membership in this
+    // tenant before anything is written. A userId from another tenant
+    // matches zero rows: NotFound, never a silent no-op on someone else's
+    // profile.
+    const { count } = await this.prisma.user.updateMany({
+      where: { id: userId, memberships: { some: { tenantId } } },
+      data: { name: data.name, company: data.company },
     });
+    if (count !== 1) {
+      throw new NotFoundException('User not found.');
+    }
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found.');
+    }
     return toDomainUser(user);
+  }
+
+  async findMemberById(
+    tenantId: string,
+    userId: string,
+  ): Promise<TenantScopedUser | null> {
+    // No status filter: a revoked (blocked) member must still be visible
+    // to their own tenant's admins, or nobody could ever un-block them.
+    // What this guards against is a DIFFERENT tenant's id, not a
+    // different status.
+    const membership = await this.prisma.membership.findFirst({
+      where: { tenantId, userId },
+      include: { user: true },
+    });
+    return membership ? toTenantScopedUser(membership) : null;
+  }
+
+  async findMembers(
+    filter: ListTenantMembersFilter,
+  ): Promise<{ users: TenantScopedUser[]; total: number }> {
+    const { tenantId, page, pageSize, search, role, active, sortBy, sortDir } =
+      filter;
+
+    const where: Prisma.MembershipWhereInput = {
+      tenantId,
+      ...(active !== undefined
+        ? { status: active ? 'ACTIVE' : 'REVOKED' }
+        : {}),
+      ...(role ? { role } : {}),
+      ...(search
+        ? {
+            user: {
+              OR: [
+                { name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
+              ],
+            },
+          }
+        : {}),
+    };
+
+    const orderBy: Prisma.MembershipOrderByWithRelationInput =
+      sortBy === 'createdAt'
+        ? { createdAt: sortDir }
+        : { user: { [sortBy]: sortDir } };
+
+    const [memberships, total] = await this.prisma.$transaction([
+      this.prisma.membership.findMany({
+        where,
+        include: { user: true },
+        orderBy,
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.membership.count({ where }),
+    ]);
+
+    return { users: memberships.map(toTenantScopedUser), total };
   }
 
   async findIdentity(
@@ -104,7 +160,7 @@ export class PrismaUserRepository implements UserRepository {
     const identity = await this.prisma.identity.findUnique({
       where: {
         provider_providerId: {
-          provider: provider,
+          provider,
           providerId,
         },
       },
@@ -121,7 +177,7 @@ export class PrismaUserRepository implements UserRepository {
     providerId: string,
   ): Promise<void> {
     await this.prisma.identity.create({
-      data: { provider: provider, providerId, userId },
+      data: { provider, providerId, userId },
     });
   }
 
@@ -134,7 +190,7 @@ export class PrismaUserRepository implements UserRepository {
       data: {
         email,
         identities: {
-          create: { provider: provider, providerId },
+          create: { provider, providerId },
         },
       },
     });
