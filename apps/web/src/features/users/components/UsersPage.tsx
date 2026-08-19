@@ -4,9 +4,14 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Ban, CircleCheck, Pencil, Plus } from 'lucide-react';
 
-import { Button, Badge, DataTable, DataTableFeatures } from '@4basearch/ui';
+import { Button } from '@ui/atoms/Button/Button';
+import { Badge } from '@ui/atoms/Badge/Badge';
+import {
+  DataTable,
+  DataTableFeatures,
+} from '@ui/organisms/DataTable/DataTable';
 
-import { useAuth } from '@/features/auth';
+import { useSession } from '@/features/auth';
 import { useUsers } from '@/features/users/hooks/use-users';
 import { useUpdateUser } from '@/features/users/hooks/use-update-user';
 import type { ManagedUser } from '@/features/users/domain/user';
@@ -18,7 +23,7 @@ export function UsersPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser } = useSession();
 
   const page = Math.max(1, Number(searchParams.get('page') ?? '1') || 1);
 
@@ -46,11 +51,6 @@ export function UsersPage() {
       cell: ({ row }) => row.original.name ?? row.original.email,
     },
     { accessorKey: 'email', header: t.email },
-    {
-      accessorKey: 'role',
-      header: t.role,
-      cell: ({ row }) => dict.shell.roles[row.original.role],
-    },
     {
       accessorKey: 'active',
       header: t.status,

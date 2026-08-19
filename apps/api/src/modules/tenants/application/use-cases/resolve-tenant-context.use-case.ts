@@ -14,12 +14,6 @@ import {
 } from '../../domain/repositories/membership.repository';
 import { isMembershipActive } from '../../domain/membership-status';
 import type { TenantContext } from '../../domain/tenant-context';
-import type { Membership } from '../../domain/entities/membership.entity';
-
-export interface ResolvedTenant {
-  tenantContext: TenantContext;
-  membership: Membership;
-}
 
 @Injectable()
 export class ResolveTenantContextUseCase {
@@ -31,7 +25,7 @@ export class ResolveTenantContextUseCase {
     private readonly membershipRepository: MembershipRepository,
   ) {}
 
-  async execute(context: RequestContext): Promise<ResolvedTenant> {
+  async execute(context: RequestContext): Promise<TenantContext> {
     // Step 1 — Tenant Resolution: "which tenant is this request for?"
     const tenantId = await this.tenantResolver.resolve(context);
     if (!tenantId) {
@@ -51,7 +45,9 @@ export class ResolveTenantContextUseCase {
 
     // Step 3 — Membership Validation: "can this user act in that tenant?"
     // Resolution alone never authorizes anything — a resolved tenant with
-    // no (or a revoked) membership still fails closed here.
+    // no (or a revoked) membership still fails closed here. Only role and
+    // membershipId cross this boundary — status/timestamps are validated
+    // here and then discarded, never carried downstream.
     const membership = await this.membershipRepository.findByUserAndTenant(
       context.userId,
       tenantId,
@@ -61,8 +57,10 @@ export class ResolveTenantContextUseCase {
     }
 
     return {
-      tenantContext: { tenantId, userId: context.userId },
-      membership,
+      userId: context.userId,
+      tenantId,
+      membershipId: membership.id,
+      role: membership.role,
     };
   }
 }

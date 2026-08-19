@@ -7,7 +7,7 @@ import {
   ShoppingBag,
   Users,
 } from 'lucide-react';
-import { Sidebar, SidebarSectionData } from '@4basearch/ui';
+import { Sidebar, SidebarSectionData } from './Sidebar';
 
 const sections: SidebarSectionData[] = [
   {

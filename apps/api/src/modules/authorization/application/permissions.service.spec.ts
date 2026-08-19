@@ -14,7 +14,7 @@ describe('PermissionsService', () => {
   });
 
   it('works for any object with a role field, not just a User — e.g. a Membership', () => {
-    const membership = { role: Role.SUPER_ADMIN };
+    const membership = { role: Role.OWNER };
     expect(service.can(membership, 'memberships.revoke')).toBe(true);
   });
 });

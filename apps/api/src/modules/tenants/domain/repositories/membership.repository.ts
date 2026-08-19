@@ -22,6 +22,16 @@ export interface MembershipRepository {
   ): Promise<Membership | null>;
   findActiveByUserId(userId: string): Promise<Membership[]>;
   findActiveByTenantId(tenantId: string): Promise<Membership[]>;
+  /** Every Membership in the tenant, any status — the admin CRUD list view
+   *  (unlike findActiveByTenantId, revoked members stay visible so they
+   *  can be found and reactivated). */
+  findByTenantId(tenantId: string): Promise<Membership[]>;
+  /** Every Membership the user holds, any status, across every tenant —
+   *  Platform Scope: the platform admin's per-user membership view. */
+  findAllByUserId(userId: string): Promise<Membership[]>;
+  /** Platform Scope lookup by id alone — a Platform Admin isn't acting
+   *  from within any one tenant, so there's no tenantId to scope by. */
+  findByIdUnscoped(id: string): Promise<Membership | null>;
   create(data: CreateMembershipData): Promise<Membership>;
 
   // All three mutations require `tenantId` in the same call as `id` —
@@ -31,4 +41,9 @@ export interface MembershipRepository {
   reactivate(tenantId: string, id: string, role: Role): Promise<Membership>;
   revoke(tenantId: string, id: string): Promise<Membership>;
   updateRole(tenantId: string, id: string, role: Role): Promise<Membership>;
+
+  /** Platform Scope: permanently removes the link between a User and a
+   *  Tenant — unlike `revoke`, this is not a status change, the row is
+   *  gone. Undoing an accidental/incorrect membership grant. */
+  deleteById(id: string): Promise<void>;
 }

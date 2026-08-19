@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { ROLES } from '@4basearch/domain-types';
 
 export interface CreateUserValidationMessages {
   nameRequired: string;
@@ -13,7 +12,6 @@ export function createUserSchema(messages: CreateUserValidationMessages) {
     company: z.string().optional(),
     email: z.email({ error: messages.emailInvalid }),
     password: z.string().min(8, { error: messages.passwordMin }),
-    role: z.enum(ROLES),
   });
 }
 
@@ -27,7 +25,6 @@ export function updateUserSchema(messages: UpdateUserValidationMessages) {
   return z.object({
     name: z.string().min(1, { error: messages.nameRequired }),
     company: z.string().optional(),
-    role: z.enum(ROLES),
   });
 }
 

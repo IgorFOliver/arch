@@ -2,10 +2,11 @@
 
 import { ReactNode, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-import { AdminLayout } from '@4basearch/ui';
+import { AdminLayout } from '@ui/templates/AdminLayout/AdminLayout';
 
-import { useAuth, useLogout } from '@/features/auth';
+import { useSession, useLogout } from '@/features/auth';
 import { useLocaleSwitcher } from '@/shared/hooks/use-locale-switcher';
 import { locales, type Locale } from '@/shared/lib/i18n/config';
 import { useDictionary } from '@/shared/lib/i18n/use-dictionary';
@@ -24,7 +25,7 @@ export function AdminShell({ lang, children }: AdminShellProps) {
 
   const dict = useDictionary();
 
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useSession();
   const logoutMutation = useLogout();
   const switchLocale = useLocaleSwitcher();
 
@@ -57,9 +58,14 @@ export function AdminShell({ lang, children }: AdminShellProps) {
     user.role,
     user.isPlatformAdmin,
   );
-  const roleLabel = user.role
-    ? dict.shell.roles[user.role]
-    : dict.shell.roles.PLATFORM_ADMIN;
+  // Platform Scope wins the label when both apply; a user with neither
+  // (authenticated, zero Memberships, not a Platform Admin) gets no
+  // role label at all rather than being mislabeled "Platform Admin".
+  const roleLabel = user.isPlatformAdmin
+    ? dict.shell.roles.PLATFORM_ADMIN
+    : user.role
+      ? dict.shell.roles[user.role]
+      : '';
 
   const languages = locales.map((code) => ({
     code,
@@ -75,6 +81,11 @@ export function AdminShell({ lang, children }: AdminShellProps) {
         },
         sections,
         activeHref: route?.href,
+        // Client-side navigation — without this, Sidebar falls back to a
+        // plain <a>, and every menu click does a full page reload (which
+        // also tears down SessionProvider's cache, refetching /auth/session
+        // every single time).
+        LinkComponent: Link,
       }}
       topbarProps={{
         language: lang,

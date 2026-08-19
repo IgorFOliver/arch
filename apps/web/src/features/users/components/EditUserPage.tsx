@@ -3,9 +3,10 @@
 import { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
-import { UserForm } from '@4basearch/ui';
+import { UserForm } from './UserForm';
+import { UserMemberships } from './UserMemberships';
 
 import { useUser } from '@/features/users/hooks/use-user';
 import {
@@ -27,38 +28,33 @@ export function EditUserPage({ userId }: EditUserPageProps) {
   const dict = useDictionary();
   const { form: t, validation, errors } = dict.users;
 
-  const roleOptions = useMemo(
-    () =>
-      Object.entries(dict.shell.roles).map(([value, label]) => ({
-        value,
-        label,
-      })),
-    [dict.shell.roles],
-  );
-
   const schema = useMemo(() => updateUserSchema(validation), [validation]);
+
+  const values = useMemo(
+    () =>
+      userQuery.data
+        ? {
+            name: userQuery.data.name ?? '',
+            company: userQuery.data.company ?? '',
+          }
+        : undefined,
+    [userQuery.data],
+  );
 
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors: formErrors },
   } = useForm<UpdateUserFormValues>({
     resolver: zodResolver(schema),
-    values: userQuery.data
-      ? {
-          name: userQuery.data.name ?? '',
-          company: userQuery.data.company ?? '',
-          role: userQuery.data.role,
-        }
-      : undefined,
+    values,
   });
 
   const updateUserMutation = useUpdateUser();
 
-  const onSubmit = handleSubmit((values) => {
+  const onSubmit = handleSubmit((formValues) => {
     updateUserMutation.mutate(
-      { id: userId, input: values },
+      { id: userId, input: formValues },
       { onSuccess: () => router.push('/users') },
     );
   });
@@ -92,33 +88,27 @@ export function EditUserPage({ userId }: EditUserPageProps) {
   }
 
   return (
-    <Controller
-      name="role"
-      control={control}
-      render={({ field }) => (
-        <UserForm
-          title={dict.users.editPage.title}
-          submitLabel={dict.users.editPage.submitLabel}
-          nameLabel={t.nameLabel}
-          companyLabel={t.companyLabel}
-          emailLabel={t.emailLabel}
-          roleLabel={t.roleLabel}
-          roleOptions={roleOptions}
-          role={field.value}
-          onRoleChange={field.onChange}
-          nameInputProps={register('name')}
-          companyInputProps={register('company')}
-          emailInputProps={{
-            disabled: true,
-            defaultValue: userQuery.data.email,
-          }}
-          nameError={formErrors.name?.message}
-          companyError={formErrors.company?.message}
-          error={errorMessage}
-          isLoading={updateUserMutation.isPending}
-          onSubmit={onSubmit}
-        />
-      )}
-    />
+    <>
+      <UserForm
+        title={dict.users.editPage.title}
+        submitLabel={dict.users.editPage.submitLabel}
+        nameLabel={t.nameLabel}
+        companyLabel={t.companyLabel}
+        emailLabel={t.emailLabel}
+        nameInputProps={register('name')}
+        companyInputProps={register('company')}
+        emailInputProps={{
+          disabled: true,
+          defaultValue: userQuery.data.email,
+        }}
+        nameError={formErrors.name?.message}
+        companyError={formErrors.company?.message}
+        error={errorMessage}
+        isLoading={updateUserMutation.isPending}
+        onSubmit={onSubmit}
+      />
+
+      <UserMemberships userId={userId} />
+    </>
   );
 }

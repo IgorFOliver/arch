@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { managedUserSchema } from './domain/user';
+import { userMembershipSchema } from './domain/user-membership';
 import type { Role } from '@4basearch/domain-types';
 
 export interface CreateUserInput {
@@ -7,14 +8,17 @@ export interface CreateUserInput {
   company?: string | null;
   email: string;
   password: string;
-  role: Role;
 }
 
 export interface UpdateUserInput {
   name?: string;
   company?: string | null;
-  role?: Role;
   active?: boolean;
+}
+
+export interface AddMembershipInput {
+  tenantId: string;
+  role: Role;
 }
 
 export type UsersErrorCode =
@@ -22,7 +26,11 @@ export type UsersErrorCode =
   | 'userNotFound'
   | 'emailTaken'
   | 'createUserFailed'
-  | 'updateUserFailed';
+  | 'updateUserFailed'
+  | 'loadMembershipsFailed'
+  | 'addMembershipFailed'
+  | 'membershipAlreadyExists'
+  | 'deleteMembershipFailed';
 
 export type UsersSortField = 'createdAt' | 'name' | 'email';
 export type SortDirection = 'asc' | 'desc';
@@ -31,7 +39,6 @@ export interface ListUsersParams {
   page: number;
   pageSize: number;
   search?: string;
-  role?: Role;
   active?: boolean;
   sortBy?: UsersSortField;
   sortDir?: SortDirection;
@@ -53,5 +60,12 @@ export const userResponseSchema = z.object({
   user: managedUserSchema,
 });
 
+export const listUserMembershipsResponseSchema = z.object({
+  memberships: z.array(userMembershipSchema),
+});
+
 export type ListUsersResponse = z.infer<typeof listUsersResponseSchema>;
 export type UserResponse = z.infer<typeof userResponseSchema>;
+export type ListUserMembershipsResponse = z.infer<
+  typeof listUserMembershipsResponseSchema
+>;

@@ -1,4 +1,3 @@
-import type { Role } from '@4basearch/domain-types';
 import type { AuthProviderType, User } from '../entities/user.entity';
 
 export const USER_REPOSITORY = Symbol('USER_REPOSITORY');
@@ -13,30 +12,14 @@ export interface CreateUserData {
 export interface UpdateUserData {
   name?: string;
   company?: string;
+  /** Platform-wide ban flag — see User.active. */
+  active?: boolean;
 }
 
-/**
- * A user as seen from inside one tenant — `role`/`active` are read
- * entirely from that tenant's Membership, never from the User row itself.
- */
-export interface TenantScopedUser {
-  id: string;
-  email: string;
-  name: string | null;
-  company: string | null;
-  role: Role;
-  active: boolean;
-  createdAt: Date;
-}
-
-export interface ListTenantMembersFilter {
-  tenantId: string;
+export interface ListUsersFilter {
   page: number;
   pageSize: number;
   search?: string;
-  role?: Role;
-  /** undefined = both active and revoked memberships (an admin must still
-   *  be able to see and re-activate a blocked member). */
   active?: boolean;
   sortBy: 'createdAt' | 'name' | 'email';
   sortDir: 'asc' | 'desc';
@@ -49,24 +32,10 @@ export interface UserRepository {
   findByEmail(email: string): Promise<User | null>;
   create(data: CreateUserData): Promise<User>;
 
-  // Tenant-scoped admin operations — "user pertence ao Tenant" is always
-  // defined via Membership, never a User.tenantId (which doesn't exist).
-  // `updateMember` is the only mutation on User's profile fields anywhere
-  // in the codebase — there is deliberately no bare `update(id, data)`,
-  // so it's structurally impossible to touch a user's profile without
-  // also proving they belong to the given tenant.
-  findMemberById(
-    tenantId: string,
-    userId: string,
-  ): Promise<TenantScopedUser | null>;
-  findMembers(
-    filter: ListTenantMembersFilter,
-  ): Promise<{ users: TenantScopedUser[]; total: number }>;
-  updateMember(
-    tenantId: string,
-    userId: string,
-    data: UpdateUserData,
-  ): Promise<User>;
+  // Platform Scope: the platform-wide identity registry — every User on
+  // the platform, independent of any tenant/Membership.
+  findAll(filter: ListUsersFilter): Promise<{ users: User[]; total: number }>;
+  update(id: string, data: UpdateUserData): Promise<User>;
 
   /** Identity-linking primitives backing the Auth0 find-or-create flow. */
   findIdentity(

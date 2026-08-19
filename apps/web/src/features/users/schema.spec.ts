@@ -18,7 +18,6 @@ describe('createUserSchema', () => {
       name: 'Ada Lovelace',
       email: 'ada@example.com',
       password: 'a-strong-password',
-      role: 'USER',
     });
 
     expect(result.success).toBe(true);
@@ -29,7 +28,6 @@ describe('createUserSchema', () => {
       name: '',
       email: 'ada@example.com',
       password: 'a-strong-password',
-      role: 'USER',
     });
 
     expect(result.success).toBe(false);
@@ -41,7 +39,6 @@ describe('createUserSchema', () => {
       name: 'Ada Lovelace',
       email: 'not-an-email',
       password: 'a-strong-password',
-      role: 'USER',
     });
 
     expect(result.success).toBe(false);
@@ -53,39 +50,24 @@ describe('createUserSchema', () => {
       name: 'Ada Lovelace',
       email: 'ada@example.com',
       password: 'short',
-      role: 'USER',
     });
 
     expect(result.success).toBe(false);
     expect(result.error?.issues[0]?.message).toBe(createMessages.passwordMin);
-  });
-
-  it('rejects a role outside of the known set', () => {
-    const result = schema.safeParse({
-      name: 'Ada Lovelace',
-      email: 'ada@example.com',
-      password: 'a-strong-password',
-      role: 'NOT_A_ROLE',
-    });
-
-    expect(result.success).toBe(false);
   });
 });
 
 describe('updateUserSchema', () => {
   const schema = updateUserSchema(updateMessages);
 
-  it('accepts a valid payload without requiring a password', () => {
-    const result = schema.safeParse({
-      name: 'Ada Lovelace',
-      role: 'ADMIN',
-    });
+  it('accepts a valid payload', () => {
+    const result = schema.safeParse({ name: 'Ada Lovelace' });
 
     expect(result.success).toBe(true);
   });
 
   it('rejects an empty name with the given message', () => {
-    const result = schema.safeParse({ name: '', role: 'ADMIN' });
+    const result = schema.safeParse({ name: '' });
 
     expect(result.success).toBe(false);
     expect(result.error?.issues[0]?.message).toBe(updateMessages.nameRequired);

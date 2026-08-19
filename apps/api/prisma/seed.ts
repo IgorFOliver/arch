@@ -22,9 +22,9 @@ const profiles: SeedProfile[] = [
     password: process.env.SEED_ADMIN_PASSWORD ?? 'changeme123',
   },
   {
-    role: Role.SUPER_ADMIN,
-    email: process.env.SEED_SUPER_ADMIN_EMAIL ?? 'superadmin@example.com',
-    password: process.env.SEED_SUPER_ADMIN_PASSWORD ?? 'changeme123',
+    role: Role.OWNER,
+    email: process.env.SEED_OWNER_EMAIL ?? 'owner@example.com',
+    password: process.env.SEED_OWNER_PASSWORD ?? 'changeme123',
   },
 ];
 

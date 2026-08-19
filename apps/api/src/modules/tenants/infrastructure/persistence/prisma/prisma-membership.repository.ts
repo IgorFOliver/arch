@@ -58,6 +58,29 @@ export class PrismaMembershipRepository implements MembershipRepository {
     return memberships.map(toDomainMembership);
   }
 
+  async findByTenantId(tenantId: string): Promise<Membership[]> {
+    const memberships = await this.prisma.membership.findMany({
+      where: { tenantId },
+      orderBy: { createdAt: 'desc' },
+    });
+    return memberships.map(toDomainMembership);
+  }
+
+  async findAllByUserId(userId: string): Promise<Membership[]> {
+    const memberships = await this.prisma.membership.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+    });
+    return memberships.map(toDomainMembership);
+  }
+
+  async findByIdUnscoped(id: string): Promise<Membership | null> {
+    const membership = await this.prisma.membership.findUnique({
+      where: { id },
+    });
+    return membership ? toDomainMembership(membership) : null;
+  }
+
   async create(data: CreateMembershipData): Promise<Membership> {
     const membership = await this.prisma.membership.create({
       data: { userId: data.userId, tenantId: data.tenantId, role: data.role },
@@ -83,6 +106,10 @@ export class PrismaMembershipRepository implements MembershipRepository {
     role: Role,
   ): Promise<Membership> {
     return this.mutateWithinTenant(tenantId, id, { role });
+  }
+
+  async deleteById(id: string): Promise<void> {
+    await this.prisma.membership.delete({ where: { id } });
   }
 
   /**

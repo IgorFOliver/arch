@@ -185,11 +185,11 @@ export class AuthController {
     activeTenantId: string | null,
   ): Promise<Role | null> {
     try {
-      const { membership } = await this.resolveTenantContextUseCase.execute({
+      const tenantContext = await this.resolveTenantContextUseCase.execute({
         userId,
         activeTenantId,
       });
-      return membership.role;
+      return tenantContext.role;
     } catch {
       return null;
     }

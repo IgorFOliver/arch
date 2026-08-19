@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { TenantForm } from '@4basearch/ui';
+import { TenantForm } from './TenantForm';
 
 import {
   createTenantSchema,

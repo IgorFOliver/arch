@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import type { Role } from '@4basearch/domain-types';
 import {
@@ -10,41 +11,58 @@ import {
   type MembershipRepository,
 } from '../../domain/repositories/membership.repository';
 import type { Membership } from '../../domain/entities/membership.entity';
+import type { TenantContext } from '../../domain/tenant-context';
 import { PermissionsService } from '../../../authorization/application/permissions.service';
+import {
+  USER_REPOSITORY,
+  type UserRepository,
+} from '../../../users/domain/repositories/user.repository';
 import { AUDIT_PORT, type AuditPort } from '../../../audit/domain/audit.port';
 
 export interface CreateMembershipInput {
-  actingMembership: Membership;
-  targetUserId: string;
+  actingContext: TenantContext;
+  email: string;
   role: Role;
 }
 
+/**
+ * Associates an EXISTING User (found by email) with the acting admin's
+ * tenant — never creates a new User. Creating a brand-new identity is
+ * UsersController's job; this is purely "invite someone who already has
+ * an account elsewhere on the platform into my tenant".
+ */
 @Injectable()
 export class CreateMembershipUseCase {
   constructor(
     @Inject(MEMBERSHIP_REPOSITORY)
     private readonly membershipRepository: MembershipRepository,
+    @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
     private readonly permissionsService: PermissionsService,
     @Inject(AUDIT_PORT) private readonly auditPort: AuditPort,
   ) {}
 
   async execute(input: CreateMembershipInput): Promise<Membership> {
     if (
-      !this.permissionsService.can(input.actingMembership, 'memberships.create')
+      !this.permissionsService.can(input.actingContext, 'memberships.create')
     ) {
       throw new ForbiddenException(
         'You do not have permission to add members to this tenant.',
       );
     }
 
+    const targetUser = await this.userRepository.findByEmail(input.email);
+    if (!targetUser) {
+      throw new NotFoundException('No user found with this email.');
+    }
+
     // The tenant a membership gets created in is ALWAYS the acting
-    // membership's own tenant — never a caller-supplied value. A separate
+    // context's own tenant — never a caller-supplied value. A separate
     // `tenantId` field here would let an admin of tenant B pass tenant A's
     // id and create a membership somewhere they have no authority over.
-    const tenantId = input.actingMembership.tenantId;
+    const tenantId = input.actingContext.tenantId;
 
     const existing = await this.membershipRepository.findByUserAndTenant(
-      input.targetUserId,
+      targetUser.id,
       tenantId,
     );
 
@@ -61,7 +79,7 @@ export class CreateMembershipUseCase {
       );
     } else {
       membership = await this.membershipRepository.create({
-        userId: input.targetUserId,
+        userId: targetUser.id,
         tenantId,
         role: input.role,
       });
@@ -69,11 +87,11 @@ export class CreateMembershipUseCase {
 
     await this.auditPort.record({
       tenantId,
-      actorUserId: input.actingMembership.userId,
+      actorUserId: input.actingContext.userId,
       action: 'MEMBERSHIP_CREATED',
       resourceType: 'Membership',
       resourceId: membership.id,
-      metadata: { targetUserId: input.targetUserId, role: input.role },
+      metadata: { targetUserId: targetUser.id, role: input.role },
     });
 
     return membership;

@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import {
-  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@4basearch/ui';
+} from './DropdownMenu';
+import { Button } from '../../atoms/Button/Button';
 
 const meta = {
   title: 'atomic/Molecules/DropdownMenu',

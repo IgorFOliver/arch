@@ -45,7 +45,8 @@
       "main": "Main",
       "home": "Home",
       "users": "Users",
-      "tenants": "Tenants"
+      "tenants": "Tenants",
+      "memberships": "Memberships"
     },
     "topbar": {
       "notifications": "Notifications",
@@ -55,7 +56,7 @@
     "roles": {
       "USER": "User",
       "ADMIN": "Admin",
-      "SUPER_ADMIN": "Super Admin",
+      "OWNER": "Owner",
       "PLATFORM_ADMIN": "Platform Admin"
     }
   },
@@ -69,7 +70,6 @@
     "table": {
       "name": "Name",
       "email": "Email",
-      "role": "Role",
       "status": "Status",
       "actions": "Actions",
       "active": "Active",
@@ -95,8 +95,7 @@
       "nameLabel": "Name",
       "companyLabel": "Company",
       "emailLabel": "Email",
-      "passwordLabel": "Password",
-      "roleLabel": "Role"
+      "passwordLabel": "Password"
     },
     "validation": {
       "nameRequired": "Name is required.",
@@ -109,6 +108,37 @@
       "emailTaken": "A user with this email already exists.",
       "createUserFailed": "Could not create the user. Please try again.",
       "updateUserFailed": "Could not update the user. Please try again."
+    },
+    "memberships": {
+      "title": "Tenant memberships",
+      "addButton": "Add",
+      "table": {
+        "tenant": "Tenant",
+        "role": "Role",
+        "status": "Status",
+        "actions": "Actions",
+        "active": "Active",
+        "revoked": "Revoked",
+        "remove": "Remove membership",
+        "noResults": "This user has no tenant memberships yet."
+      },
+      "form": {
+        "tenantLabel": "Tenant",
+        "roleLabel": "Role"
+      },
+      "deleteDialog": {
+        "title": "Remove this membership?",
+        "description": "This permanently removes this user's access to that tenant. This action cannot be undone.",
+        "confirmLabel": "Remove",
+        "cancelLabel": "Cancel",
+        "closeLabel": "Close"
+      },
+      "errors": {
+        "loadMembershipsFailed": "Failed to load this user's memberships.",
+        "addMembershipFailed": "Could not add the membership. Please try again.",
+        "membershipAlreadyExists": "This user already has an active membership for this tenant.",
+        "deleteMembershipFailed": "Could not remove the membership. Please try again."
+      }
     }
   },
   "tenants": {
@@ -155,6 +185,51 @@
       "createTenantFailed": "Could not create the tenant. Please try again.",
       "updateTenantFailed": "Could not update the tenant. Please try again.",
       "statusUpdateFailed": "Could not update the tenant's status. Please try again."
+    }
+  },
+  "memberships": {
+    "title": "Memberships",
+    "createButton": "New membership",
+    "backToList": "Back to memberships",
+    "table": {
+      "user": "User",
+      "role": "Role",
+      "status": "Status",
+      "actions": "Actions",
+      "active": "Active",
+      "revoked": "Revoked",
+      "edit": "Edit membership",
+      "revoke": "Revoke membership",
+      "reactivate": "Reactivate membership",
+      "noResults": "No memberships found.",
+      "previous": "Previous",
+      "next": "Next",
+      "pagePrefix": "Page",
+      "pageSeparator": "of"
+    },
+    "createPage": {
+      "title": "New membership",
+      "submitLabel": "Add member"
+    },
+    "editPage": {
+      "title": "Edit membership",
+      "submitLabel": "Save changes"
+    },
+    "form": {
+      "emailLabel": "Email",
+      "roleLabel": "Role"
+    },
+    "validation": {
+      "emailInvalid": "Invalid email address."
+    },
+    "errors": {
+      "loadMembershipsFailed": "Failed to load memberships. Please try again.",
+      "membershipNotFound": "Membership not found.",
+      "userNotFound": "No user found with this email.",
+      "membershipAlreadyExists": "This user already has an active membership for this tenant.",
+      "createMembershipFailed": "Could not add the member. Please try again.",
+      "updateMembershipFailed": "Could not update the membership. Please try again.",
+      "statusUpdateFailed": "Could not update the membership's status. Please try again."
     }
   }
 }

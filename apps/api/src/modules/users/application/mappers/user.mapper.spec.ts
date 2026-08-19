@@ -1,8 +1,7 @@
 import { expect } from '@jest/globals';
 import { Role } from '@4basearch/domain-types';
-import { toPublicUser, toPublicUserFromTenantScoped } from './user.mapper';
+import { toPublicUser } from './user.mapper';
 import type { User } from '../../domain/entities/user.entity';
-import type { TenantScopedUser } from '../../domain/repositories/user.repository';
 
 describe('toPublicUser', () => {
   const user: User = {
@@ -30,21 +29,5 @@ describe('toPublicUser', () => {
 
   it('accepts a null role for responses with no resolvable tenant', () => {
     expect(toPublicUser(user, null).role).toBeNull();
-  });
-});
-
-describe('toPublicUserFromTenantScoped', () => {
-  it('carries the Membership-sourced role and active status through as-is', () => {
-    const member: TenantScopedUser = {
-      id: 'user-1',
-      email: 'dev@example.com',
-      name: 'Dev User',
-      company: null,
-      role: Role.ADMIN,
-      active: false,
-      createdAt: new Date(),
-    };
-
-    expect(toPublicUserFromTenantScoped(member)).toEqual(member);
   });
 });

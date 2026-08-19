@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Badge } from '@4basearch/ui';
+import { Badge } from './Badge';
 
 const meta = {
   title: 'atomic/Atoms/Badge',

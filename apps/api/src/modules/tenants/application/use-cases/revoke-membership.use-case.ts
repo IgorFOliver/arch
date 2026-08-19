@@ -9,11 +9,12 @@ import {
   type MembershipRepository,
 } from '../../domain/repositories/membership.repository';
 import type { Membership } from '../../domain/entities/membership.entity';
+import type { TenantContext } from '../../domain/tenant-context';
 import { PermissionsService } from '../../../authorization/application/permissions.service';
 import { AUDIT_PORT, type AuditPort } from '../../../audit/domain/audit.port';
 
 export interface RevokeMembershipInput {
-  actingMembership: Membership;
+  actingContext: TenantContext;
   membershipId: string;
 }
 
@@ -28,15 +29,16 @@ export class RevokeMembershipUseCase {
 
   async execute(input: RevokeMembershipInput): Promise<Membership> {
     if (
-      !this.permissionsService.can(input.actingMembership, 'memberships.revoke')
+      !this.permissionsService.can(input.actingContext, 'memberships.revoke')
     ) {
       throw new ForbiddenException(
         'You do not have permission to revoke members of this tenant.',
       );
     }
 
+    const tenantId = input.actingContext.tenantId;
     const target = await this.membershipRepository.findById(
-      input.actingMembership.tenantId,
+      tenantId,
       input.membershipId,
     );
     if (!target) {
@@ -44,13 +46,13 @@ export class RevokeMembershipUseCase {
     }
 
     const membership = await this.membershipRepository.revoke(
-      input.actingMembership.tenantId,
+      tenantId,
       target.id,
     );
 
     await this.auditPort.record({
-      tenantId: input.actingMembership.tenantId,
-      actorUserId: input.actingMembership.userId,
+      tenantId,
+      actorUserId: input.actingContext.userId,
       action: 'MEMBERSHIP_REVOKED',
       resourceType: 'Membership',
       resourceId: membership.id,

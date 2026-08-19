@@ -1,13 +1,14 @@
 import { UsersApiError } from './users-api';
-import type { Dictionary } from '@/shared/lib/i18n/dictionaries';
+import type { UsersErrorCode } from './users-api.types';
 
 export function resolveUsersErrorMessage(
   error: unknown,
-  errors: Dictionary['users']['errors'],
-  fallback: keyof Dictionary['users']['errors'],
+  errors: Partial<Record<UsersErrorCode, string>>,
+  fallback: UsersErrorCode,
 ): string {
+  const fallbackMessage = errors[fallback] ?? fallback;
   if (error instanceof UsersApiError) {
-    return errors[error.code] ?? errors[fallback];
+    return errors[error.code] ?? fallbackMessage;
   }
-  return errors[fallback];
+  return fallbackMessage;
 }

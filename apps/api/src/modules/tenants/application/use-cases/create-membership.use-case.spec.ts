@@ -1,29 +1,55 @@
-import { ConflictException, ForbiddenException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { expect } from '@jest/globals';
 import { Role } from '@4basearch/domain-types';
 import { CreateMembershipUseCase } from './create-membership.use-case';
 import { PermissionsService } from '../../../authorization/application/permissions.service';
 import type { MembershipRepository } from '../../domain/repositories/membership.repository';
 import type { Membership } from '../../domain/entities/membership.entity';
+import type { TenantContext } from '../../domain/tenant-context';
+import type { UserRepository } from '../../../users/domain/repositories/user.repository';
+import type { User } from '../../../users/domain/entities/user.entity';
 import type { AuditPort } from '../../../audit/domain/audit.port';
 
 describe('CreateMembershipUseCase', () => {
   let membershipRepository: jest.Mocked<MembershipRepository>;
+  let userRepository: jest.Mocked<UserRepository>;
   let permissionsService: PermissionsService;
   let auditPort: jest.Mocked<AuditPort>;
   let useCase: CreateMembershipUseCase;
 
-  const actingAdmin: Membership = {
-    id: 'membership-admin',
+  const actingAdmin: TenantContext = {
     userId: 'admin-1',
     tenantId: 'tenant-a',
+    membershipId: 'membership-admin',
     role: Role.ADMIN,
-    status: 'ACTIVE',
+  };
+
+  const actingPlainUser: TenantContext = { ...actingAdmin, role: Role.USER };
+
+  const targetUser: User = {
+    id: 'user-2',
+    email: 'target@example.com',
+    passwordHash: 'hashed',
+    name: 'Target User',
+    company: null,
+    active: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
 
-  const actingPlainUser: Membership = { ...actingAdmin, role: Role.USER };
+  const existingMembership: Membership = {
+    id: 'existing',
+    userId: 'user-2',
+    tenantId: 'tenant-a',
+    role: Role.USER,
+    status: 'ACTIVE',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
 
   beforeEach(() => {
     membershipRepository = {
@@ -31,25 +57,41 @@ describe('CreateMembershipUseCase', () => {
       findByUserAndTenant: jest.fn(),
       findActiveByUserId: jest.fn(),
       findActiveByTenantId: jest.fn(),
+      findByTenantId: jest.fn(),
+      findAllByUserId: jest.fn(),
+      findByIdUnscoped: jest.fn(),
       create: jest.fn(),
       reactivate: jest.fn(),
       revoke: jest.fn(),
       updateRole: jest.fn(),
+      deleteById: jest.fn(),
+    };
+    userRepository = {
+      findById: jest.fn(),
+      findByEmail: jest.fn(),
+      create: jest.fn(),
+      findAll: jest.fn(),
+      update: jest.fn(),
+      findIdentity: jest.fn(),
+      linkIdentity: jest.fn(),
+      createFromAuth0: jest.fn(),
     };
     permissionsService = new PermissionsService();
     auditPort = { record: jest.fn() };
     useCase = new CreateMembershipUseCase(
       membershipRepository,
+      userRepository,
       permissionsService,
       auditPort,
     );
+    userRepository.findByEmail.mockResolvedValue(targetUser);
   });
 
   it('denies a plain USER member from adding new members', async () => {
     await expect(
       useCase.execute({
-        actingMembership: actingPlainUser,
-        targetUserId: 'user-2',
+        actingContext: actingPlainUser,
+        email: targetUser.email,
         role: Role.USER,
       }),
     ).rejects.toThrow(ForbiddenException);
@@ -57,18 +99,28 @@ describe('CreateMembershipUseCase', () => {
     expect(auditPort.record).not.toHaveBeenCalled();
   });
 
-  it('throws when the target user already has an active membership', async () => {
-    membershipRepository.findByUserAndTenant.mockResolvedValue({
-      ...actingAdmin,
-      id: 'existing',
-      userId: 'user-2',
-      status: 'ACTIVE',
-    });
+  it('throws NotFound when no user exists with that email', async () => {
+    userRepository.findByEmail.mockResolvedValue(null);
 
     await expect(
       useCase.execute({
-        actingMembership: actingAdmin,
-        targetUserId: 'user-2',
+        actingContext: actingAdmin,
+        email: 'unknown@example.com',
+        role: Role.USER,
+      }),
+    ).rejects.toThrow(NotFoundException);
+    expect(membershipRepository.findByUserAndTenant).not.toHaveBeenCalled();
+  });
+
+  it('throws when the target user already has an active membership', async () => {
+    membershipRepository.findByUserAndTenant.mockResolvedValue(
+      existingMembership,
+    );
+
+    await expect(
+      useCase.execute({
+        actingContext: actingAdmin,
+        email: targetUser.email,
         role: Role.USER,
       }),
     ).rejects.toThrow(ConflictException);
@@ -77,21 +129,17 @@ describe('CreateMembershipUseCase', () => {
 
   it('reactivates a previously revoked membership instead of creating a duplicate', async () => {
     membershipRepository.findByUserAndTenant.mockResolvedValue({
-      ...actingAdmin,
-      id: 'existing',
-      userId: 'user-2',
+      ...existingMembership,
       status: 'REVOKED',
     });
     membershipRepository.reactivate.mockResolvedValue({
-      ...actingAdmin,
-      id: 'existing',
-      userId: 'user-2',
+      ...existingMembership,
       status: 'ACTIVE',
     });
 
     await useCase.execute({
-      actingMembership: actingAdmin,
-      targetUserId: 'user-2',
+      actingContext: actingAdmin,
+      email: targetUser.email,
       role: Role.USER,
     });
 
@@ -112,15 +160,13 @@ describe('CreateMembershipUseCase', () => {
   it('creates a brand new membership when none existed and records an audit event', async () => {
     membershipRepository.findByUserAndTenant.mockResolvedValue(null);
     membershipRepository.create.mockResolvedValue({
-      ...actingAdmin,
+      ...existingMembership,
       id: 'new-membership',
-      userId: 'user-2',
-      role: Role.USER,
     });
 
     const result = await useCase.execute({
-      actingMembership: actingAdmin,
-      targetUserId: 'user-2',
+      actingContext: actingAdmin,
+      email: targetUser.email,
       role: Role.USER,
     });
 
@@ -140,28 +186,23 @@ describe('CreateMembershipUseCase', () => {
   });
 
   it("always creates the membership in the acting admin's OWN tenant — there is no way to target a different one", async () => {
-    // Regression test: an earlier version of this input took a separate
-    // `tenantId` field alongside `actingMembership`, so an admin of one
-    // tenant could pass a *different* tenant's id and create a membership
-    // there. `CreateMembershipInput` has no such field anymore — the
-    // tenant is always derived from `actingMembership.tenantId`.
-    const adminOfTenantB: Membership = {
+    // Regression test: the tenant is always derived from
+    // actingContext.tenantId, never a separate caller-supplied field.
+    const adminOfTenantB: TenantContext = {
       ...actingAdmin,
-      id: 'membership-admin-b',
       userId: 'admin-2',
       tenantId: 'tenant-b',
     };
     membershipRepository.findByUserAndTenant.mockResolvedValue(null);
     membershipRepository.create.mockResolvedValue({
-      ...adminOfTenantB,
+      ...existingMembership,
       id: 'new-membership',
-      userId: 'user-2',
-      role: Role.USER,
+      tenantId: 'tenant-b',
     });
 
     await useCase.execute({
-      actingMembership: adminOfTenantB,
-      targetUserId: 'user-2',
+      actingContext: adminOfTenantB,
+      email: targetUser.email,
       role: Role.USER,
     });
 

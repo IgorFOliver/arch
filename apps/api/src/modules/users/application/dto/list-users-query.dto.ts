@@ -1,7 +1,6 @@
 import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
-  IsEnum,
   IsIn,
   IsInt,
   IsOptional,
@@ -9,7 +8,6 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import { Role } from '@prisma/client';
 
 export type UsersSortField = 'createdAt' | 'name' | 'email';
 export type SortDirection = 'asc' | 'desc';
@@ -31,10 +29,6 @@ export class ListUsersQueryDto {
   @IsOptional()
   @IsString()
   search?: string;
-
-  @IsOptional()
-  @IsEnum(Role)
-  role?: Role;
 
   @IsOptional()
   @Transform(({ value }: { value: unknown }) =>

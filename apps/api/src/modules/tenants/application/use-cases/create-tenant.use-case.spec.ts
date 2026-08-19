@@ -26,16 +26,23 @@ describe('CreateTenantUseCase', () => {
       findById: jest.fn(),
       findBySlug: jest.fn(),
       create: jest.fn(),
+      list: jest.fn(),
+      update: jest.fn(),
+      updateStatus: jest.fn(),
     };
     membershipRepository = {
       findById: jest.fn(),
       findByUserAndTenant: jest.fn(),
       findActiveByUserId: jest.fn(),
       findActiveByTenantId: jest.fn(),
+      findByTenantId: jest.fn(),
+      findAllByUserId: jest.fn(),
+      findByIdUnscoped: jest.fn(),
       create: jest.fn(),
       reactivate: jest.fn(),
       revoke: jest.fn(),
       updateRole: jest.fn(),
+      deleteById: jest.fn(),
     };
     auditPort = { record: jest.fn() };
     useCase = new CreateTenantUseCase(

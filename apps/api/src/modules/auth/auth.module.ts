@@ -34,7 +34,7 @@ const auth0Providers: Provider[] = auth0Configured ? [Auth0Strategy] : [];
   imports: [
     PassportModule,
     forwardRef(() => UsersModule),
-    TenantsModule,
+    forwardRef(() => TenantsModule),
     PlatformModule,
   ],
   controllers: [AuthController],

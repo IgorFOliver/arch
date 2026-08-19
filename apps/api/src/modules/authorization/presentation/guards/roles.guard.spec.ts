@@ -2,28 +2,25 @@ import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@4basearch/domain-types';
 import { RolesGuard } from './roles.guard';
-import type { Membership } from '../../../tenants/domain/entities/membership.entity';
+import type { TenantContext } from '../../../tenants/domain/tenant-context';
 
 describe('RolesGuard', () => {
   let reflector: jest.Mocked<Reflector>;
   let guard: RolesGuard;
 
-  const membership: Membership = {
-    id: 'membership-1',
+  const tenantContext: TenantContext = {
     userId: 'user-1',
     tenantId: 'tenant-a',
+    membershipId: 'membership-1',
     role: Role.USER,
-    status: 'ACTIVE',
-    createdAt: new Date(),
-    updatedAt: new Date(),
   };
 
   const contextFor = (
-    currentMembership: Membership | undefined,
+    currentTenantContext: TenantContext | undefined,
   ): ExecutionContext =>
     ({
       switchToHttp: () => ({
-        getRequest: () => ({ membership: currentMembership }),
+        getRequest: () => ({ tenantContext: currentTenantContext }),
       }),
       getHandler: () => jest.fn(),
       getClass: () => jest.fn(),
@@ -39,26 +36,26 @@ describe('RolesGuard', () => {
   it('allows access when no roles are required', () => {
     reflector.getAllAndOverride.mockReturnValue(undefined);
 
-    expect(guard.canActivate(contextFor(membership))).toBe(true);
+    expect(guard.canActivate(contextFor(tenantContext))).toBe(true);
   });
 
-  it('allows access when the Membership has one of the required roles', () => {
+  it('allows access when the TenantContext has one of the required roles', () => {
     reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
 
     expect(
-      guard.canActivate(contextFor({ ...membership, role: Role.ADMIN })),
+      guard.canActivate(contextFor({ ...tenantContext, role: Role.ADMIN })),
     ).toBe(true);
   });
 
-  it('denies access when the Membership does not have the required role', () => {
+  it('denies access when the TenantContext does not have the required role', () => {
     reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
 
-    expect(() => guard.canActivate(contextFor(membership))).toThrow(
+    expect(() => guard.canActivate(contextFor(tenantContext))).toThrow(
       ForbiddenException,
     );
   });
 
-  it('denies access when there is no Membership on the request (TenantGuard did not run, or resolution failed)', () => {
+  it('denies access when there is no TenantContext on the request (TenantGuard did not run, or resolution failed)', () => {
     reflector.getAllAndOverride.mockReturnValue([Role.ADMIN]);
 
     expect(() => guard.canActivate(contextFor(undefined))).toThrow(

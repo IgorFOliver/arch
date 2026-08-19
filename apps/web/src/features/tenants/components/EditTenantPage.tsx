@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { TenantForm } from '@4basearch/ui';
+import { TenantForm } from './TenantForm';
 
 import { useTenant } from '@/features/tenants/hooks/use-tenant';
 import {
@@ -29,13 +29,18 @@ export function EditTenantPage({ tenantId }: EditTenantPageProps) {
 
   const schema = useMemo(() => updateTenantSchema(validation), [validation]);
 
+  const values = useMemo(
+    () => (tenantQuery.data ? { name: tenantQuery.data.name } : undefined),
+    [tenantQuery.data],
+  );
+
   const {
     register,
     handleSubmit,
     formState: { errors: formErrors },
   } = useForm<UpdateTenantFormValues>({
     resolver: zodResolver(schema),
-    values: tenantQuery.data ? { name: tenantQuery.data.name } : undefined,
+    values,
   });
 
   const updateTenantMutation = useUpdateTenant();

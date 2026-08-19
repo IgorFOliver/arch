@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Slider, SliderProps } from '@4basearch/ui';
+import { Slider, SliderProps } from './Slider';
 
 function ControlledSlider(props: SliderProps) {
   const [value, setValue] = useState(props.value);

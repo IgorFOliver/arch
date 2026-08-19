@@ -7,18 +7,21 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "class-variance-authority": "catalog:",
+    "clsx": "^2.1.1",
+    "lucide-react": "catalog:",
+    "radix-ui": "catalog:",
     "react": "^19",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "tailwind-merge": "catalog:"
   },
   "devDependencies": {
     "@4basearch/furniture-engine": "workspace:*",
     "@4basearch/furniture-renderer": "workspace:*",
     "@4basearch/furniture-types": "workspace:*",
-    "@4basearch/ui": "workspace:*",
     "@react-three/drei": "catalog:",
     "@react-three/fiber": "catalog:",
     "@tanstack/react-table": "catalog:",
-    "lucide-react": "catalog:",
     "@storybook/addon-a11y": "8.6.18",
     "@storybook/addon-docs": "8.6.18",
     "@storybook/addon-essentials": "8.6.18",

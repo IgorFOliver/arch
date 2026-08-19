@@ -93,6 +93,20 @@ describe('PrismaMembershipRepository', () => {
     });
   });
 
+  describe('findByTenantId', () => {
+    it('scopes the query by tenantId only — both active and revoked members', async () => {
+      prisma.membership.findMany.mockResolvedValue([membership]);
+
+      await expect(repository.findByTenantId('tenant-a')).resolves.toEqual([
+        membership,
+      ]);
+      expect(prisma.membership.findMany).toHaveBeenCalledWith({
+        where: { tenantId: 'tenant-a' },
+        orderBy: { createdAt: 'desc' },
+      });
+    });
+  });
+
   describe('create / reactivate / revoke', () => {
     it('creates a membership with the given role', async () => {
       prisma.membership.create.mockResolvedValue(membership);
@@ -142,14 +156,14 @@ describe('PrismaMembershipRepository', () => {
       prisma.membership.updateMany.mockResolvedValue({ count: 1 });
       prisma.membership.findFirst.mockResolvedValue({
         ...membership,
-        role: Role.SUPER_ADMIN,
+        role: Role.OWNER,
       });
 
-      await repository.updateRole('tenant-a', 'membership-1', Role.SUPER_ADMIN);
+      await repository.updateRole('tenant-a', 'membership-1', Role.OWNER);
 
       expect(prisma.membership.updateMany).toHaveBeenCalledWith({
         where: { id: 'membership-1', tenantId: 'tenant-a' },
-        data: { role: Role.SUPER_ADMIN },
+        data: { role: Role.OWNER },
       });
     });
 

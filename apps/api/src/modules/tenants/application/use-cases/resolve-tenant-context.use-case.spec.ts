@@ -50,10 +50,14 @@ describe('ResolveTenantContextUseCase', () => {
       findByUserAndTenant: jest.fn(),
       findActiveByUserId: jest.fn(),
       findActiveByTenantId: jest.fn(),
+      findByTenantId: jest.fn(),
+      findAllByUserId: jest.fn(),
+      findByIdUnscoped: jest.fn(),
       create: jest.fn(),
       reactivate: jest.fn(),
       revoke: jest.fn(),
       updateRole: jest.fn(),
+      deleteById: jest.fn(),
     };
     useCase = new ResolveTenantContextUseCase(
       tenantResolver,
@@ -62,7 +66,7 @@ describe('ResolveTenantContextUseCase', () => {
     );
   });
 
-  it('returns the TenantContext and Membership when resolution succeeds', async () => {
+  it('returns the merged TenantContext when resolution succeeds', async () => {
     tenantResolver.resolve.mockResolvedValue('tenant-a');
     tenantRepository.findById.mockResolvedValue(activeTenant);
     membershipRepository.findByUserAndTenant.mockResolvedValue(
@@ -70,8 +74,10 @@ describe('ResolveTenantContextUseCase', () => {
     );
 
     await expect(useCase.execute(baseContext)).resolves.toEqual({
-      tenantContext: { tenantId: 'tenant-a', userId: 'user-1' },
-      membership: activeMembership,
+      userId: 'user-1',
+      tenantId: 'tenant-a',
+      membershipId: 'membership-1',
+      role: Role.ADMIN,
     });
   });
 

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { QueryProvider } from '@/infrastructure/api/QueryProvider';
-import { AuthProvider } from '@/infrastructure/auth/AuthProvider';
+import { SessionProvider } from '@/infrastructure/auth/SessionProvider';
 import { DictionaryProvider } from '@/shared/lib/i18n/DictionaryProvider';
 import { getDictionary } from '@/shared/lib/i18n/dictionaries';
 import { getLocale } from '@/shared/lib/i18n/get-locale';
@@ -38,7 +38,7 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <DictionaryProvider dict={dict}>
           <QueryProvider>
-            <AuthProvider>{children}</AuthProvider>
+            <SessionProvider>{children}</SessionProvider>
           </QueryProvider>
         </DictionaryProvider>
       </body>

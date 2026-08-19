@@ -15,15 +15,17 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'users.delete',
     'memberships.read',
     'memberships.create',
+    'memberships.update',
     'memberships.revoke',
   ],
-  [Role.SUPER_ADMIN]: [
+  [Role.OWNER]: [
     'users.read',
     'users.create',
     'users.update',
     'users.delete',
     'memberships.read',
     'memberships.create',
+    'memberships.update',
     'memberships.revoke',
   ],
 };

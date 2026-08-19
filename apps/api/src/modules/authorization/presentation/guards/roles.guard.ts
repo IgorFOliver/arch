@@ -6,14 +6,14 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { Role } from '@4basearch/domain-types';
-import type { Membership } from '../../../tenants/domain/entities/membership.entity';
+import type { TenantContext } from '../../../tenants/domain/tenant-context';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 
 /**
- * Reads `request.membership.role` — never `request.user.role` (User has
+ * Reads `request.tenantContext.role` — never `request.user.role` (User has
  * no role; Membership.role, scoped to the current tenant, is the only
  * authority). Requires TenantGuard to have run first on the same route so
- * `request.membership` is already populated.
+ * `request.tenantContext` is already populated.
  */
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -31,10 +31,10 @@ export class RolesGuard implements CanActivate {
 
     const request = context
       .switchToHttp()
-      .getRequest<{ membership?: Membership }>();
-    const membership = request.membership;
+      .getRequest<{ tenantContext?: TenantContext }>();
+    const tenantContext = request.tenantContext;
 
-    if (!membership || !requiredRoles.includes(membership.role)) {
+    if (!tenantContext || !requiredRoles.includes(tenantContext.role)) {
       throw new ForbiddenException(
         'You do not have permission to access this resource.',
       );

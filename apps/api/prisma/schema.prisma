@@ -15,7 +15,7 @@ enum AuthProvider {
 enum Role {
   USER
   ADMIN
-  SUPER_ADMIN
+  OWNER
 }
 
 // `active` here is the platform-wide ban flag checked at login/session

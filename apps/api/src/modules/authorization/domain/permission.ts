@@ -5,4 +5,5 @@ export type Permission =
   | 'users.delete'
   | 'memberships.read'
   | 'memberships.create'
+  | 'memberships.update'
   | 'memberships.revoke';

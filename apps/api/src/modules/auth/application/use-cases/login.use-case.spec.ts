@@ -24,16 +24,19 @@ describe('LoginUseCase', () => {
     updatedAt: new Date(),
   };
 
-  const session = { token: 'raw-token', expiresAt: new Date() };
+  const session = {
+    token: 'raw-token',
+    expiresAt: new Date(),
+    activeTenantId: null,
+  };
 
   beforeEach(() => {
     userRepository = {
       findById: jest.fn(),
       findByEmail: jest.fn(),
       create: jest.fn(),
-      updateMember: jest.fn(),
-      findMemberById: jest.fn(),
-      findMembers: jest.fn(),
+      findAll: jest.fn(),
+      update: jest.fn(),
       findIdentity: jest.fn(),
       linkIdentity: jest.fn(),
       createFromAuth0: jest.fn(),

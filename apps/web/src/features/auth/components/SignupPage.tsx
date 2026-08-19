@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { SignupForm, AuthLayout } from '@4basearch/ui';
+import { AuthLayout } from '@ui/templates/AuthLayout/AuthLayout';
+
+import { SignupForm } from './SignupForm';
 
 import { createSignupSchema, SignupFormValues } from '@/features/auth/schema';
 import { useSignup } from '@/features/auth/use-signup';

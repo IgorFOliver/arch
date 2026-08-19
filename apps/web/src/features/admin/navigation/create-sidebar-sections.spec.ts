@@ -7,6 +7,7 @@ const shellDict: Dictionary['shell'] = {
     main: 'Main',
     home: 'Home',
     users: 'Users',
+    memberships: 'Memberships',
     tenants: 'Tenants',
   },
 } as Dictionary['shell'];
@@ -19,43 +20,47 @@ describe('createSidebarSections', () => {
     expect(sections[0]!.items.map((item) => item.label)).toEqual(['Home']);
   });
 
-  it('includes the users item for an admin', () => {
+  it('includes memberships but not the platform-only users item for an admin', () => {
     const sections = createSidebarSections(shellDict, Role.ADMIN, false);
 
     expect(sections[0]!.items.map((item) => item.label)).toEqual([
       'Home',
-      'Users',
+      'Memberships',
     ]);
   });
 
-  it('includes the users item for a super admin', () => {
-    const sections = createSidebarSections(shellDict, Role.SUPER_ADMIN, false);
+  it('includes memberships but not the platform-only users item for an owner', () => {
+    const sections = createSidebarSections(shellDict, Role.OWNER, false);
 
     expect(sections[0]!.items.map((item) => item.label)).toEqual([
       'Home',
-      'Users',
+      'Memberships',
     ]);
   });
 
-  it('hides every item (fails closed) for an unauthenticated-equivalent user: no tenant role and not a Platform Admin', () => {
-    expect(createSidebarSections(shellDict, null, false)).toEqual([]);
+  it('still shows Home for an authenticated user with no tenant Membership and no Platform Scope', () => {
+    const sections = createSidebarSections(shellDict, null, false);
+
+    expect(sections[0]!.items.map((item) => item.label)).toEqual(['Home']);
   });
 
-  it('shows Home and Tenants — but never Users — for a PLATFORM_ADMIN with no Tenant Membership', () => {
+  it('shows Home, Users and Tenants — but never Memberships — for a PLATFORM_ADMIN with no Tenant Membership', () => {
     const sections = createSidebarSections(shellDict, null, true);
 
     expect(sections[0]!.items.map((item) => item.label)).toEqual([
       'Home',
+      'Users',
       'Tenants',
     ]);
   });
 
-  it('shows Tenants alongside Users when a user is both a tenant ADMIN and a PLATFORM_ADMIN', () => {
+  it('shows Users and Tenants alongside Memberships when a user is both a tenant ADMIN and a PLATFORM_ADMIN', () => {
     const sections = createSidebarSections(shellDict, Role.ADMIN, true);
 
     expect(sections[0]!.items.map((item) => item.label)).toEqual([
       'Home',
       'Users',
+      'Memberships',
       'Tenants',
     ]);
   });

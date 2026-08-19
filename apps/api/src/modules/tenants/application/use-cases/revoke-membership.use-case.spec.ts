@@ -5,6 +5,7 @@ import { RevokeMembershipUseCase } from './revoke-membership.use-case';
 import { PermissionsService } from '../../../authorization/application/permissions.service';
 import type { MembershipRepository } from '../../domain/repositories/membership.repository';
 import type { Membership } from '../../domain/entities/membership.entity';
+import type { TenantContext } from '../../domain/tenant-context';
 import type { AuditPort } from '../../../audit/domain/audit.port';
 
 describe('RevokeMembershipUseCase', () => {
@@ -13,21 +14,21 @@ describe('RevokeMembershipUseCase', () => {
   let auditPort: jest.Mocked<AuditPort>;
   let useCase: RevokeMembershipUseCase;
 
-  const actingAdmin: Membership = {
-    id: 'membership-admin',
+  const actingAdmin: TenantContext = {
     userId: 'admin-1',
     tenantId: 'tenant-a',
+    membershipId: 'membership-admin',
     role: Role.ADMIN,
-    status: 'ACTIVE',
-    createdAt: new Date(),
-    updatedAt: new Date(),
   };
 
   const targetMembership: Membership = {
-    ...actingAdmin,
     id: 'membership-target',
     userId: 'user-2',
+    tenantId: 'tenant-a',
     role: Role.USER,
+    status: 'ACTIVE',
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   beforeEach(() => {
@@ -36,10 +37,14 @@ describe('RevokeMembershipUseCase', () => {
       findByUserAndTenant: jest.fn(),
       findActiveByUserId: jest.fn(),
       findActiveByTenantId: jest.fn(),
+      findByTenantId: jest.fn(),
+      findAllByUserId: jest.fn(),
+      findByIdUnscoped: jest.fn(),
       create: jest.fn(),
       reactivate: jest.fn(),
       revoke: jest.fn(),
       updateRole: jest.fn(),
+      deleteById: jest.fn(),
     };
     permissionsService = new PermissionsService();
     auditPort = { record: jest.fn() };
@@ -53,7 +58,7 @@ describe('RevokeMembershipUseCase', () => {
   it('denies a plain USER member from revoking others', async () => {
     await expect(
       useCase.execute({
-        actingMembership: { ...actingAdmin, role: Role.USER },
+        actingContext: { ...actingAdmin, role: Role.USER },
         membershipId: 'membership-target',
       }),
     ).rejects.toThrow(ForbiddenException);
@@ -67,7 +72,7 @@ describe('RevokeMembershipUseCase', () => {
 
     await expect(
       useCase.execute({
-        actingMembership: actingAdmin,
+        actingContext: actingAdmin,
         membershipId: 'membership-from-tenant-b',
       }),
     ).rejects.toThrow(NotFoundException);
@@ -86,7 +91,7 @@ describe('RevokeMembershipUseCase', () => {
     });
 
     const result = await useCase.execute({
-      actingMembership: actingAdmin,
+      actingContext: actingAdmin,
       membershipId: 'membership-target',
     });
 

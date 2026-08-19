@@ -59,10 +59,14 @@ describe('SwitchActiveTenantUseCase', () => {
       findByUserAndTenant: jest.fn(),
       findActiveByUserId: jest.fn(),
       findActiveByTenantId: jest.fn(),
+      findByTenantId: jest.fn(),
+      findAllByUserId: jest.fn(),
+      findByIdUnscoped: jest.fn(),
       create: jest.fn(),
       reactivate: jest.fn(),
       revoke: jest.fn(),
       updateRole: jest.fn(),
+      deleteById: jest.fn(),
     };
     useCase = new SwitchActiveTenantUseCase(
       sessionRepository,

@@ -7,7 +7,7 @@ import { Role } from '@4basearch/domain-types';
 import { TenantGuard } from './tenant.guard';
 import { ResolveTenantContextUseCase } from '../../application/use-cases/resolve-tenant-context.use-case';
 import type { User } from '../../../users/domain/entities/user.entity';
-import type { Membership } from '../../domain/entities/membership.entity';
+import type { TenantContext } from '../../domain/tenant-context';
 
 describe('TenantGuard', () => {
   let resolveTenantContextUseCase: jest.Mocked<ResolveTenantContextUseCase>;
@@ -24,14 +24,11 @@ describe('TenantGuard', () => {
     updatedAt: new Date(),
   };
 
-  const membership: Membership = {
-    id: 'membership-1',
+  const tenantContext: TenantContext = {
     userId: 'user-1',
     tenantId: 'tenant-a',
+    membershipId: 'membership-1',
     role: Role.ADMIN,
-    status: 'ACTIVE',
-    createdAt: new Date(),
-    updatedAt: new Date(),
   };
 
   const contextFor = (
@@ -77,19 +74,12 @@ describe('TenantGuard', () => {
     );
   });
 
-  it('attaches tenantContext and membership, then allows access', async () => {
-    resolveTenantContextUseCase.execute.mockResolvedValue({
-      tenantContext: { tenantId: 'tenant-a', userId: user.id },
-      membership,
-    });
+  it('attaches the resolved TenantContext, then allows access', async () => {
+    resolveTenantContextUseCase.execute.mockResolvedValue(tenantContext);
     const { context, request } = contextFor(user, 'tenant-a');
 
     await expect(guard.canActivate(context)).resolves.toBe(true);
-    expect(request.tenantContext).toEqual({
-      tenantId: 'tenant-a',
-      userId: user.id,
-    });
-    expect(request.membership).toEqual(membership);
+    expect(request.tenantContext).toEqual(tenantContext);
     expect(resolveTenantContextUseCase.execute).toHaveBeenCalledWith({
       userId: user.id,
       activeTenantId: 'tenant-a',
@@ -99,10 +89,7 @@ describe('TenantGuard', () => {
   });
 
   it("reads the Current Tenant from the session (request.activeTenantId), never guessing when it's null", async () => {
-    resolveTenantContextUseCase.execute.mockResolvedValue({
-      tenantContext: { tenantId: 'tenant-a', userId: user.id },
-      membership,
-    });
+    resolveTenantContextUseCase.execute.mockResolvedValue(tenantContext);
     const { context } = contextFor(user, null);
 
     await guard.canActivate(context);

@@ -45,7 +45,8 @@
       "main": "Principal",
       "home": "Início",
       "users": "Usuários",
-      "tenants": "Tenants"
+      "tenants": "Tenants",
+      "memberships": "Memberships"
     },
     "topbar": {
       "notifications": "Notificações",
@@ -55,7 +56,7 @@
     "roles": {
       "USER": "Usuário",
       "ADMIN": "Administrador",
-      "SUPER_ADMIN": "Super Administrador",
+      "OWNER": "Proprietário",
       "PLATFORM_ADMIN": "Administrador da Plataforma"
     }
   },
@@ -69,7 +70,6 @@
     "table": {
       "name": "Nome",
       "email": "E-mail",
-      "role": "Função",
       "status": "Status",
       "actions": "Ações",
       "active": "Ativo",
@@ -95,8 +95,7 @@
       "nameLabel": "Nome",
       "companyLabel": "Empresa",
       "emailLabel": "E-mail",
-      "passwordLabel": "Senha",
-      "roleLabel": "Função"
+      "passwordLabel": "Senha"
     },
     "validation": {
       "nameRequired": "O nome é obrigatório.",
@@ -109,6 +108,37 @@
       "emailTaken": "Já existe um usuário com este e-mail.",
       "createUserFailed": "Não foi possível criar o usuário. Tente novamente.",
       "updateUserFailed": "Não foi possível atualizar o usuário. Tente novamente."
+    },
+    "memberships": {
+      "title": "Memberships de tenants",
+      "addButton": "Adicionar",
+      "table": {
+        "tenant": "Tenant",
+        "role": "Função",
+        "status": "Status",
+        "actions": "Ações",
+        "active": "Ativo",
+        "revoked": "Revogado",
+        "remove": "Remover membership",
+        "noResults": "Este usuário ainda não possui memberships."
+      },
+      "form": {
+        "tenantLabel": "Tenant",
+        "roleLabel": "Função"
+      },
+      "deleteDialog": {
+        "title": "Remover este membership?",
+        "description": "Isso remove permanentemente o acesso deste usuário a esse tenant. Esta ação não pode ser desfeita.",
+        "confirmLabel": "Remover",
+        "cancelLabel": "Cancelar",
+        "closeLabel": "Fechar"
+      },
+      "errors": {
+        "loadMembershipsFailed": "Falha ao carregar os memberships deste usuário.",
+        "addMembershipFailed": "Não foi possível adicionar o membership. Tente novamente.",
+        "membershipAlreadyExists": "Este usuário já possui um membership ativo para este tenant.",
+        "deleteMembershipFailed": "Não foi possível remover o membership. Tente novamente."
+      }
     }
   },
   "tenants": {
@@ -155,6 +185,51 @@
       "createTenantFailed": "Não foi possível criar o tenant. Tente novamente.",
       "updateTenantFailed": "Não foi possível atualizar o tenant. Tente novamente.",
       "statusUpdateFailed": "Não foi possível atualizar o status do tenant. Tente novamente."
+    }
+  },
+  "memberships": {
+    "title": "Memberships",
+    "createButton": "Novo membership",
+    "backToList": "Voltar para memberships",
+    "table": {
+      "user": "Usuário",
+      "role": "Função",
+      "status": "Status",
+      "actions": "Ações",
+      "active": "Ativo",
+      "revoked": "Revogado",
+      "edit": "Editar membership",
+      "revoke": "Revogar membership",
+      "reactivate": "Reativar membership",
+      "noResults": "Nenhum membership encontrado.",
+      "previous": "Anterior",
+      "next": "Próxima",
+      "pagePrefix": "Página",
+      "pageSeparator": "de"
+    },
+    "createPage": {
+      "title": "Novo membership",
+      "submitLabel": "Adicionar membro"
+    },
+    "editPage": {
+      "title": "Editar membership",
+      "submitLabel": "Salvar alterações"
+    },
+    "form": {
+      "emailLabel": "E-mail",
+      "roleLabel": "Função"
+    },
+    "validation": {
+      "emailInvalid": "Endereço de e-mail inválido."
+    },
+    "errors": {
+      "loadMembershipsFailed": "Falha ao carregar os memberships. Tente novamente.",
+      "membershipNotFound": "Membership não encontrado.",
+      "userNotFound": "Nenhum usuário encontrado com este e-mail.",
+      "membershipAlreadyExists": "Este usuário já possui um membership ativo neste tenant.",
+      "createMembershipFailed": "Não foi possível adicionar o membro. Tente novamente.",
+      "updateMembershipFailed": "Não foi possível atualizar o membership. Tente novamente.",
+      "statusUpdateFailed": "Não foi possível atualizar o status do membership. Tente novamente."
     }
   }
 }

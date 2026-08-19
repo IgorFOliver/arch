@@ -7,7 +7,8 @@ import {
   ShoppingBag,
   Users,
 } from 'lucide-react';
-import { AdminLayout, SidebarSectionData } from '@4basearch/ui';
+import { AdminLayout } from './AdminLayout';
+import type { SidebarSectionData } from '../../organisms/Sidebar/Sidebar';
 
 const sections: SidebarSectionData[] = [
   {
