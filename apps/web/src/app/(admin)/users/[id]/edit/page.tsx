@@ -1,4 +1,4 @@
-import { EditUserPage } from '@/features/users/components/EditUserPage';
+import { EditUserPage } from '@/features/users';
 
 export default async function EditUser({
   params,

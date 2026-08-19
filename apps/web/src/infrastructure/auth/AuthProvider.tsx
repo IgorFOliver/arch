@@ -2,10 +2,10 @@
 
 import { ReactNode } from 'react';
 
-import { useSession } from '@/features/auth/use-session';
+import { useAuth } from '@/features/auth/use-auth';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  useSession();
+  useAuth();
 
   return <>{children}</>;
 }

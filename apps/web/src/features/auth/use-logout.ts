@@ -1,14 +1,18 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { logout } from './api';
-import { useAuthStore } from './store';
+import { authKeys } from './query-keys';
 
 export function useLogout() {
-  const clearUser = useAuthStore((state) => state.clearUser);
+  const queryClient = useQueryClient();
+
+  const clearSession = () => {
+    queryClient.setQueryData(authKeys.session(), null);
+  };
 
   return useMutation({
     mutationFn: logout,
-    onSuccess: () => clearUser(),
-    onError: () => clearUser(),
+    onSuccess: clearSession,
+    onError: clearSession,
   });
 }

@@ -1,6 +1,6 @@
 import { getDictionary } from '@/shared/lib/i18n/dictionaries';
 import { getLocale } from '@/shared/lib/i18n/get-locale';
-import { HomePage } from '@/features/home/components/HomePage';
+import { HomePage } from '@/features/home';
 
 export default async function Home() {
   const lang = await getLocale();

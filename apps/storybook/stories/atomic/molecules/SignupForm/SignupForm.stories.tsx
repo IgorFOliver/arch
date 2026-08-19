@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { SignupForm } from './SignupForm';
+import { SignupForm } from '@4basearch/ui';
 
 const meta = {
   title: 'atomic/Molecules/SignupForm',

@@ -1,5 +1,5 @@
 import { apiFetch, apiUrl, HttpError } from '@/infrastructure/api/http-client';
-import { AuthUser } from './store';
+import type { AuthUser } from './types';
 import { LoginFormValues, SignupFormValues } from './schema';
 
 export interface SessionResponse {

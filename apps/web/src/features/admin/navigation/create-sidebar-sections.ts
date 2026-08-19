@@ -1,4 +1,4 @@
-import type { SidebarSectionData } from '@ui/organisms/Sidebar/Sidebar';
+import type { SidebarSectionData } from '@4basearch/ui';
 import type { Dictionary } from '@/shared/lib/i18n/dictionaries';
 import type { Role } from '@4basearch/domain-types';
 import {

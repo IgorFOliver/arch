@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Topbar } from './Topbar';
+import { Topbar } from '@4basearch/ui';
 
 const meta = {
   title: 'atomic/Organisms/Topbar',

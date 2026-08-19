@@ -1,7 +1,7 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { env } from '@/infrastructure/env';
 
 export function apiUrl(path: string): string {
-  return `${API_URL}${path}`;
+  return `${env.NEXT_PUBLIC_API_URL}${path}`;
 }
 
 export class HttpError extends Error {

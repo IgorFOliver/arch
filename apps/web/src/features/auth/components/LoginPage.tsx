@@ -6,11 +6,10 @@ import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { LoginForm } from '@ui/molecules/LoginForm/LoginForm';
-import { AuthLayout } from '@ui/templates/AuthLayout/AuthLayout';
+import { LoginForm, AuthLayout } from '@4basearch/ui';
 
 import { createLoginSchema, LoginFormValues } from '@/features/auth/schema';
-import { useAuthStore } from '@/features/auth/store';
+import { useAuth } from '@/features/auth/use-auth';
 import { useLogin } from '@/features/auth/use-login';
 import { resolveAuthErrorMessage } from '@/features/auth/resolve-auth-error';
 import { useDictionary } from '@/shared/lib/i18n/use-dictionary';
@@ -19,7 +18,7 @@ export function LoginPage() {
   const router = useRouter();
   const dict = useDictionary('auth');
   const { login: t, validation, errors } = dict;
-  const isBlocked = useAuthStore((state) => state.isBlocked);
+  const { isBlocked } = useAuth();
 
   const loginSchema = useMemo(
     () => createLoginSchema(validation),

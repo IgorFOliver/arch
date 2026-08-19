@@ -3,10 +3,9 @@
 import { ReactNode, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { AdminLayout } from '@ui/templates/AdminLayout/AdminLayout';
+import { AdminLayout } from '@4basearch/ui';
 
-import { useAuthStore } from '@/features/auth/store';
-import { useLogout } from '@/features/auth/use-logout';
+import { useAuth, useLogout } from '@/features/auth';
 import { useLocaleSwitcher } from '@/shared/hooks/use-locale-switcher';
 import { locales, type Locale } from '@/shared/lib/i18n/config';
 import { useDictionary } from '@/shared/lib/i18n/use-dictionary';
@@ -24,9 +23,7 @@ export function AdminShell({ lang, children }: AdminShellProps) {
 
   const dict = useDictionary();
 
-  const user = useAuthStore((state) => state.user);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const isLoading = useAuthStore((state) => state.isLoading);
+  const { user, isAuthenticated, isLoading } = useAuth();
   const logoutMutation = useLogout();
   const switchLocale = useLocaleSwitcher();
 

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { UserForm } from './UserForm';
+import { UserForm } from '@4basearch/ui';
 
 const roleOptions = [
   { value: 'USER', label: 'User' },

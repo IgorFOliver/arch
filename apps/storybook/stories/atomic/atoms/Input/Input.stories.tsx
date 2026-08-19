@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Input } from './Input';
+import { Input } from '@4basearch/ui';
 
 const meta = {
   title: 'atomic/Atoms/Input',

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Checkbox } from './Checkbox';
+import { Checkbox } from '@4basearch/ui';
 
 const meta = {
   title: 'atomic/Atoms/Checkbox',

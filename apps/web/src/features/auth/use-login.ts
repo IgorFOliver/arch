@@ -1,13 +1,15 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { login } from './api';
-import { useAuthStore } from './store';
+import { authKeys } from './query-keys';
 
 export function useLogin() {
-  const setUser = useAuthStore((state) => state.setUser);
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: login,
-    onSuccess: (data) => setUser(data.user),
+    onSuccess: (data) => {
+      queryClient.setQueryData(authKeys.session(), data);
+    },
   });
 }

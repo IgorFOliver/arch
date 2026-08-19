@@ -4,6 +4,7 @@ import {
   listUsersResponseSchema,
   userResponseSchema,
   type CreateUserInput,
+  type ListUsersParams,
   type ListUsersResponse,
   type UpdateUserInput,
   type UserResponse,
@@ -38,10 +39,24 @@ async function withUsersApiError<T>(
   }
 }
 
-export function listUsers(): Promise<ManagedUser[]> {
+function buildListUsersQuery(params: ListUsersParams): string {
+  const query = new URLSearchParams();
+  query.set('page', String(params.page));
+  query.set('pageSize', String(params.pageSize));
+  if (params.search) query.set('search', params.search);
+  if (params.role) query.set('role', params.role);
+  if (params.active !== undefined) query.set('active', String(params.active));
+  if (params.sortBy) query.set('sortBy', params.sortBy);
+  if (params.sortDir) query.set('sortDir', params.sortDir);
+  return query.toString();
+}
+
+export function listUsers(params: ListUsersParams): Promise<ListUsersResponse> {
   return withUsersApiError('loadUsersFailed', {}, async () => {
-    const response = await apiFetch<ListUsersResponse>('/users');
-    return listUsersResponseSchema.parse(response).users;
+    const response = await apiFetch<ListUsersResponse>(
+      `/users?${buildListUsersQuery(params)}`,
+    );
+    return listUsersResponseSchema.parse(response);
   });
 }
 

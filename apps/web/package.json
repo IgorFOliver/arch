@@ -6,34 +6,37 @@
     "start:dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
   },
   "dependencies": {
     "@4basearch/domain-types": "workspace:*",
+    "@4basearch/ui": "workspace:*",
     "@hookform/resolvers": "^5.7.1",
     "@tanstack/react-query": "^5.101.4",
     "@tanstack/react-table": "catalog:",
-    "class-variance-authority": "catalog:",
-    "clsx": "^2.1.1",
     "lucide-react": "catalog:",
     "next": "16.2.4",
-    "radix-ui": "catalog:",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.85.0",
-    "tailwind-merge": "catalog:",
-    "zod": "^4.4.3",
-    "zustand": "^5.0.14"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@4basearch/config": "workspace:*",
     "@tailwindcss/postcss": "^4",
+    "@types/jest": "catalog:",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "eslint-plugin-import": "^2.32.0",
+    "jest": "catalog:",
     "tailwindcss": "^4",
+    "ts-jest": "29.4.12",
     "typescript": "^5"
   }
 }

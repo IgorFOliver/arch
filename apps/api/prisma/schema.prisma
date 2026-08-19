@@ -45,6 +45,7 @@ model Identity {
 
 model Session {
   id        String   @id @default(uuid())
+  tokenHash String   @unique
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt DateTime

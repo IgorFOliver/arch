@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 
-import { UserForm } from '@ui/molecules/UserForm/UserForm';
+import { UserForm } from '@4basearch/ui';
 import { Role } from '@4basearch/domain-types';
 
 import {

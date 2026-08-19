@@ -1,27 +1,40 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Ban, CircleCheck, Pencil, Plus } from 'lucide-react';
 
-import { Button } from '@ui/atoms/Button/Button';
-import { Badge } from '@ui/atoms/Badge/Badge';
-import {
-  DataTable,
-  DataTableFeatures,
-} from '@ui/organisms/DataTable/DataTable';
+import { Button, Badge, DataTable, DataTableFeatures } from '@4basearch/ui';
 
-import { useAuthStore } from '@/features/auth/store';
+import { useAuth } from '@/features/auth';
 import { useUsers } from '@/features/users/hooks/use-users';
 import { useUpdateUser } from '@/features/users/hooks/use-update-user';
 import type { ManagedUser } from '@/features/users/domain/user';
 import { useDictionary } from '@/shared/lib/i18n/use-dictionary';
 
+const PAGE_SIZE = 20;
+
 export function UsersPage() {
   const router = useRouter();
-  const currentUser = useAuthStore((state) => state.user);
-  const usersQuery = useUsers();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { user: currentUser } = useAuth();
+
+  const page = Math.max(1, Number(searchParams.get('page') ?? '1') || 1);
+
+  const usersQuery = useUsers({ page, pageSize: PAGE_SIZE });
   const updateUserMutation = useUpdateUser();
+
+  const setPage = (nextPage: number) => {
+    const params = new URLSearchParams(searchParams);
+    if (nextPage <= 1) {
+      params.delete('page');
+    } else {
+      params.set('page', String(nextPage));
+    }
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
+  };
 
   const dict = useDictionary();
   const t = dict.users.table;
@@ -113,7 +126,10 @@ export function UsersPage() {
 
       <DataTable
         columns={columns}
-        data={usersQuery.data ?? []}
+        data={usersQuery.data?.users ?? []}
+        pagination={{ pageIndex: page - 1, pageSize: PAGE_SIZE }}
+        onPaginationChange={(next) => setPage(next.pageIndex + 1)}
+        pageCount={usersQuery.data?.meta.totalPages ?? 1}
         noResultsLabel={t.noResults}
         previousLabel={t.previous}
         nextLabel={t.next}

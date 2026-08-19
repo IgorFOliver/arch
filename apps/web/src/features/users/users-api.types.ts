@@ -24,8 +24,29 @@ export type UsersErrorCode =
   | 'createUserFailed'
   | 'updateUserFailed';
 
+export type UsersSortField = 'createdAt' | 'name' | 'email';
+export type SortDirection = 'asc' | 'desc';
+
+export interface ListUsersParams {
+  page: number;
+  pageSize: number;
+  search?: string;
+  role?: Role;
+  active?: boolean;
+  sortBy?: UsersSortField;
+  sortDir?: SortDirection;
+}
+
+const listUsersMetaSchema = z.object({
+  page: z.number(),
+  pageSize: z.number(),
+  total: z.number(),
+  totalPages: z.number(),
+});
+
 export const listUsersResponseSchema = z.object({
   users: z.array(managedUserSchema),
+  meta: listUsersMetaSchema,
 });
 
 export const userResponseSchema = z.object({
