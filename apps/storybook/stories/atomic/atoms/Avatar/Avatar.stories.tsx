@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Avatar, AvatarFallback, AvatarImage } from './Avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@4basearch/ui';
 
 const meta = {
   title: 'atomic/Atoms/Avatar',

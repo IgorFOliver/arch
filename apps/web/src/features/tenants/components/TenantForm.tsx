@@ -1,8 +1,6 @@
 import { ComponentProps } from 'react';
 
-import { Button } from '@ui/atoms/Button/Button';
-import { FormField } from '@ui/molecules/FormField/FormField';
-import { Input, InputProps } from '@ui/atoms/Input/Input';
+import { Button, FormField, Input, InputProps } from '@4basearch/ui';
 
 export interface TenantFormProps {
   title: string;

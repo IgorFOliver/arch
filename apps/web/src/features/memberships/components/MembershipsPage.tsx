@@ -4,12 +4,7 @@ import { useRouter } from 'next/navigation';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Ban, CircleCheck, Pencil, Plus } from 'lucide-react';
 
-import { Button } from '@ui/atoms/Button/Button';
-import { Badge } from '@ui/atoms/Badge/Badge';
-import {
-  DataTable,
-  DataTableFeatures,
-} from '@ui/organisms/DataTable/DataTable';
+import { Badge, Button, DataTable, DataTableFeatures } from '@4basearch/ui';
 
 import { useMemberships } from '@/features/memberships/hooks/use-memberships';
 import { useSetMembershipStatus } from '@/features/memberships/hooks/use-set-membership-status';

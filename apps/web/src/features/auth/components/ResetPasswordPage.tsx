@@ -6,8 +6,7 @@ import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-import { AuthLayout } from '@ui/templates/AuthLayout/AuthLayout';
-import { Button } from '@ui/atoms/Button/Button';
+import { AuthLayout, Button } from '@4basearch/ui';
 
 import { ResetPasswordForm } from './ResetPasswordForm';
 

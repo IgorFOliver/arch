@@ -1,15 +1,16 @@
 import { ComponentProps } from 'react';
 
-import { Button } from '@ui/atoms/Button/Button';
-import { FormField } from '@ui/molecules/FormField/FormField';
-import { Input, InputProps } from '@ui/atoms/Input/Input';
 import {
+  Button,
+  FormField,
+  Input,
+  InputProps,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@ui/molecules/Select/Select';
+} from '@4basearch/ui';
 
 export interface MembershipFormRoleOption {
   value: string;

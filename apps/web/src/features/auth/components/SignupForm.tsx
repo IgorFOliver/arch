@@ -1,9 +1,13 @@
 import { ComponentProps, ReactNode } from 'react';
 
-import { Button } from '@ui/atoms/Button/Button';
-import { Checkbox, CheckboxProps } from '@ui/atoms/Checkbox/Checkbox';
-import { FormField } from '@ui/molecules/FormField/FormField';
-import { Input, InputProps } from '@ui/atoms/Input/Input';
+import {
+  Button,
+  Checkbox,
+  CheckboxProps,
+  FormField,
+  Input,
+  InputProps,
+} from '@4basearch/ui';
 
 export interface SignupFormProps {
   logo?: ReactNode;

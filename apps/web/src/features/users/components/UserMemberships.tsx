@@ -3,17 +3,9 @@
 import { useMemo, useState } from 'react';
 import { Trash2 } from 'lucide-react';
 
-import { Button } from '@ui/atoms/Button/Button';
-import { Badge } from '@ui/atoms/Badge/Badge';
-import { FormField } from '@ui/molecules/FormField/FormField';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@ui/molecules/Select/Select';
-import {
+  Badge,
+  Button,
   Dialog,
   DialogClose,
   DialogContent,
@@ -21,7 +13,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@ui/molecules/Dialog/Dialog';
+  FormField,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@4basearch/ui';
 
 import { useTenants } from '@/features/tenants/hooks/use-tenants';
 import { useUserMemberships } from '@/features/users/hooks/use-user-memberships';

@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { FormField } from './FormField';
-import { Input } from '../../atoms/Input/Input';
+import { FormField, Input } from '@4basearch/ui';
 
 const meta = {
   title: 'atomic/Molecules/FormField',

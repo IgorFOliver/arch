@@ -1,8 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { AuthLayout } from './AuthLayout';
-import { Button } from '../../atoms/Button/Button';
-import { Input } from '../../atoms/Input/Input';
-import { FormField } from '../../molecules/FormField/FormField';
+import { AuthLayout, Button, Input, FormField } from '@4basearch/ui';
 
 const meta = {
   title: 'atomic/templates/AuthLayout',

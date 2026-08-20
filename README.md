@@ -12,6 +12,7 @@ arch/
 │   └── storybook/            # Storybook component library and design system
 ├── packages/
 │   ├── config/                # Shared TypeScript and Jest configurations
+│   ├── ui/                    # Shared design system components (published as @4basearch/ui)
 │   ├── furniture-types/       # Shared types for furniture configurations and resolved 3D layouts
 │   ├── furniture-engine/      # Pure logic that resolves a configuration into a positioned layout
 │   └── furniture-renderer/    # React Three Fiber primitives/assemblies that render a resolved layout
@@ -128,6 +129,10 @@ pnpm --filter web start
 
 - `pnpm --filter config build` - Build shared configurations
 
+### UI Package (packages/ui)
+
+- `pnpm --filter @4basearch/ui build` - Build the design system package (`@4basearch/ui`)
+
 ### Furniture Packages (packages/furniture-\*)
 
 - `pnpm --filter @4basearch/furniture-types build` - Build shared furniture types
@@ -165,11 +170,15 @@ Available for testing configurations:
 2. **`@4basearch/furniture-engine`** — pure functions (e.g. `buildBookcaseLayout`) that turn a configuration into a resolved `FurnitureLayout` (positioned panels, shelves, dividers, back panel). No React or Three.js involved — just math, so it's unit-tested with Jest.
 3. **`@4basearch/furniture-renderer`** — React Three Fiber primitives (`Panel`, `Shelf`, `Divider`, `BackPanel`) and assemblies (`Module`, `Bookcase`) that render a resolved layout. `Bookcase` is the seam: it calls the engine internally and renders the result.
 
-Storybook hosts every example, including the furniture ones — see `apps/storybook/stories/atomic/templates/furniture/`. There's no `packages/ui`: shared visual components (`Button`, `Input`, `FormField`, `LoginForm`, `Slider`, ...) live directly under `apps/storybook/stories/atomic/`, and apps consume them via a `@ui/*` path alias rather than an installable package.
+Storybook hosts every example, including the furniture ones — see `apps/storybook/stories/atomic/templates/furniture/`.
+
+## UI Package
+
+`packages/ui` is the design system: shared visual components (`Button`, `Input`, `FormField`, `Select`, `Dialog`, `DataTable`, `AdminLayout`, `AuthLayout`, ...) built with Radix UI primitives and Tailwind, published as the installable `@4basearch/ui` package (built with `tsup`, same pattern as the `furniture-*` packages below). `apps/web` and `apps/storybook` both consume it as a `workspace:*` dependency; Storybook's stories import components straight from `@4basearch/ui` and only add the stories on top. Form components that are specific to a single feature (login, signup, user/tenant/membership forms) live in `apps/web/src/features/**` instead — they aren't part of the shared design system.
 
 ## Publishing Packages (GitHub Packages)
 
-`packages/config` and the three `furniture-*` packages are published to a private npm registry under the [`4basearch`](https://github.com/orgs/4basearch/packages) GitHub org, so they can be consumed from other repositories (e.g. a separate product repo experimenting with the furniture engine) without living inside this monorepo.
+`packages/config`, `packages/ui` and the three `furniture-*` packages are published to a private npm registry under the [`4basearch`](https://github.com/orgs/4basearch/packages) GitHub org, so they can be consumed from other repositories (e.g. a separate product repo experimenting with the furniture engine) without living inside this monorepo.
 
 - Scope: `@4basearch/*`. Registry routing lives in the root `.npmrc`:
   ```

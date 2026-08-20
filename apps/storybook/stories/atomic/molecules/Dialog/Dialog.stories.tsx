@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import {
+  Button,
   Dialog,
   DialogClose,
   DialogContent,
@@ -8,8 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './Dialog';
-import { Button } from '../../atoms/Button/Button';
+} from '@4basearch/ui';
 
 const meta = {
   title: 'atomic/Molecules/Dialog',

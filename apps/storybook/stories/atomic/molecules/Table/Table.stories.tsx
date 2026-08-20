@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from './Table';
+} from '@4basearch/ui';
 
 const products = [
   { name: 'Oak Bookcase', category: 'Bookcases', price: '$420' },

@@ -4,7 +4,7 @@ import { ReactNode, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-import { AdminLayout } from '@ui/templates/AdminLayout/AdminLayout';
+import { AdminLayout } from '@4basearch/ui';
 
 import { useSession, useLogout } from '@/features/auth';
 import { useLocaleSwitcher } from '@/shared/hooks/use-locale-switcher';

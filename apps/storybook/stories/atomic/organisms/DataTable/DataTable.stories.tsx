@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ColumnDef } from '@tanstack/react-table';
-import { DataTable, DataTableFeatures, DataTableProps } from './DataTable';
+import { DataTable, DataTableFeatures, DataTableProps } from '@4basearch/ui';
 
 interface Product {
   name: string;

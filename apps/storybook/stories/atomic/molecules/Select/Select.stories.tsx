@@ -5,7 +5,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './Select';
+} from '@4basearch/ui';
 
 const meta = {
   title: 'atomic/Molecules/Select',

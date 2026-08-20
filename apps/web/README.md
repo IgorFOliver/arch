@@ -28,7 +28,7 @@ Each entry in `features/` groups everything for a slice of functionality — API
 This app is a workspace package (`web`) managed by **pnpm workspaces** and **[Turborepo](https://turbo.build/)**. See the [root README](../../README.md) for the full monorepo layout. A few things specific to `web`:
 
 - **Shared TypeScript config**: `tsconfig.json` extends `@arch/config/typescript`, the shared config in `packages/config`.
-- **Shared UI components**: the `@ui/*` path alias resolves to `apps/storybook/stories/atomic/*`, so atomic-design components built and documented in Storybook can be imported directly, e.g. `import { Button } from "@ui/Button"`.
+- **Shared UI components**: design-system components are imported from the installable `@4basearch/ui` package (`workspace:*` dependency, source in `packages/ui`), e.g. `import { Button } from "@4basearch/ui"`. The same components are documented and previewed in Storybook.
 - **API URL**: the app talks to the `api` workspace app over HTTP via `NEXT_PUBLIC_API_URL` (see [Environment variables](#environment-variables)) rather than a direct package import.
 
 ### Running from the repo root
