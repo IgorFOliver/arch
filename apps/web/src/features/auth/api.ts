@@ -6,13 +6,21 @@ export interface SessionResponse {
   user: AuthUser;
 }
 
+export interface MessageResponse {
+  message: string;
+}
+
 export type AuthErrorCode =
   | 'invalidCredentials'
   | 'loginFailed'
   | 'emailTaken'
   | 'signupFailed'
   | 'sessionLoadFailed'
-  | 'accountInactive';
+  | 'accountInactive'
+  | 'resetRequestFailed'
+  | 'resetTokenInvalid'
+  | 'resetFailed'
+  | 'tooManyRequests';
 
 export class AuthApiError extends Error {
   constructor(
@@ -83,4 +91,34 @@ export async function getSession(): Promise<SessionResponse | null> {
 
 export async function logout(): Promise<void> {
   await apiFetch<void>('/auth/logout', { method: 'POST' });
+}
+
+// Response is always the same generic message, whether or not the email
+// is registered — the backend is deliberately enumeration-proof here, and
+// this call is a thin passthrough that never inspects `user existence`.
+export function forgotPassword(email: string): Promise<MessageResponse> {
+  return withAuthApiError(
+    'resetRequestFailed',
+    { 429: 'tooManyRequests' },
+    () =>
+      apiFetch<MessageResponse>('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      }),
+  );
+}
+
+export function resetPassword(
+  token: string,
+  password: string,
+): Promise<MessageResponse> {
+  return withAuthApiError(
+    'resetFailed',
+    { 400: 'resetTokenInvalid', 429: 'tooManyRequests' },
+    () =>
+      apiFetch<MessageResponse>('/auth/reset-password', {
+        method: 'POST',
+        body: JSON.stringify({ token, password }),
+      }),
+  );
 }

@@ -134,4 +134,16 @@ describe('PrismaSessionRepository', () => {
       });
     });
   });
+
+  describe('revokeAllForUser', () => {
+    it('deletes every session belonging to the user, not just one', async () => {
+      prisma.session.deleteMany.mockResolvedValue({ count: 3 });
+
+      await repository.revokeAllForUser('user-1');
+
+      expect(prisma.session.deleteMany).toHaveBeenCalledWith({
+        where: { userId: 'user-1' },
+      });
+    });
+  });
 });

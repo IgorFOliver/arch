@@ -9,6 +9,10 @@ const errors = {
   sessionLoadFailed: 'Failed to load the current session.',
   accountInactive:
     'Your account has been blocked. Contact an administrator for help.',
+  resetRequestFailed: 'Something went wrong. Please try again.',
+  resetTokenInvalid: 'Invalid or expired password reset link.',
+  resetFailed: 'Could not reset your password. Please try again.',
+  tooManyRequests: 'Too many attempts. Please wait a moment and try again.',
 };
 
 describe('resolveAuthErrorMessage', () => {

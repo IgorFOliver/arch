@@ -45,6 +45,7 @@ describe('SwitchActiveTenantUseCase', () => {
       findByToken: jest.fn(),
       setActiveTenant: jest.fn(),
       revoke: jest.fn(),
+      revokeAllForUser: jest.fn(),
     };
     tenantRepository = {
       findById: jest.fn(),

@@ -159,6 +159,19 @@ describe('PrismaUserRepository', () => {
     });
   });
 
+  describe('updatePassword', () => {
+    it('writes the given hash directly onto the user, nothing else', async () => {
+      prisma.user.update.mockResolvedValue(user);
+
+      await repository.updatePassword(user.id, 'new-hashed-password');
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: user.id },
+        data: { passwordHash: 'new-hashed-password' },
+      });
+    });
+  });
+
   describe('findIdentity', () => {
     it('returns the linked user when the identity exists', async () => {
       prisma.identity.findUnique.mockResolvedValue({

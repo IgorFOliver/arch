@@ -51,4 +51,8 @@ export class PrismaSessionRepository implements SessionRepository {
       where: { tokenHash: hashToken(token) },
     });
   }
+
+  async revokeAllForUser(userId: string): Promise<void> {
+    await this.prisma.session.deleteMany({ where: { userId } });
+  }
 }

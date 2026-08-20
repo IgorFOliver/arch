@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const SESSION_COOKIE_NAME = process.env.SESSION_COOKIE_NAME ?? 'arch_session';
 
-const PUBLIC_PATHS = ['/login', '/signup'];
+const PUBLIC_PATHS = [
+  '/login',
+  '/signup',
+  '/forgot-password',
+  '/reset-password',
+];
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

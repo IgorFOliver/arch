@@ -24,18 +24,19 @@ enum Role {
 // deliberately no `role` field here anymore — Membership.role is the only
 // authority for tenant-scoped authorization.
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  passwordHash  String?
-  name          String?
-  company       String?
-  active        Boolean        @default(true)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  identities    Identity[]
-  sessions      Session[]
-  memberships   Membership[]
-  platformAdmin PlatformAdmin?
+  id                  String               @id @default(uuid())
+  email               String               @unique
+  passwordHash        String?
+  name                String?
+  company             String?
+  active              Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  identities          Identity[]
+  sessions            Session[]
+  memberships         Membership[]
+  platformAdmin       PlatformAdmin?
+  passwordResetTokens PasswordResetToken[]
 }
 
 enum PlatformRole {
@@ -68,10 +69,10 @@ model Identity {
 }
 
 model Session {
-  id        String   @id @default(uuid())
-  tokenHash String   @unique
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(uuid())
+  tokenHash      String   @unique
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   // The Current/Active Tenant — a plain pointer, not a source of trust by
   // itself. Every request re-validates it against Membership before
   // granting anything, so a Membership/Role change (or Tenant suspension)
@@ -82,6 +83,26 @@ model Session {
   activeTenantId String?
   expiresAt      DateTime
   createdAt      DateTime @default(now())
+}
+
+// Only the SHA-256 hash of the raw token is ever persisted — same
+// tokenHash pattern as Session — the raw value exists only in the email
+// sent to the user. `usedAt` marks a token as spent (single-use) without
+// deleting the row, so a reused/replayed token still resolves to a
+// record and can be told apart from one that never existed. Requesting a
+// new reset invalidates (marks used) any still-valid prior token for the
+// same user; a successful reset does the same, belt-and-braces.
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 enum TenantStatus {

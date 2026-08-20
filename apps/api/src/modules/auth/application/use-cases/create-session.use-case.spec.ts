@@ -39,6 +39,7 @@ describe('CreateSessionUseCase', () => {
       findByToken: jest.fn(),
       setActiveTenant: jest.fn(),
       revoke: jest.fn(),
+      revokeAllForUser: jest.fn(),
     };
     membershipRepository = {
       findById: jest.fn(),

@@ -36,6 +36,11 @@ export interface UserRepository {
   // the platform, independent of any tenant/Membership.
   findAll(filter: ListUsersFilter): Promise<{ users: User[]; total: number }>;
   update(id: string, data: UpdateUserData): Promise<User>;
+  /** Narrow, purpose-built mutation (like linkIdentity/createFromAuth0)
+   *  rather than folding `passwordHash` into UpdateUserData — a password
+   *  change is a distinct, security-sensitive operation (see
+   *  ResetPasswordUseCase), not a generic profile edit. */
+  updatePassword(id: string, passwordHash: string): Promise<void>;
 
   /** Identity-linking primitives backing the Auth0 find-or-create flow. */
   findIdentity(

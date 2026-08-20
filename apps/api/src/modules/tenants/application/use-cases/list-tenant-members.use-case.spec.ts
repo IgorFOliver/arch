@@ -60,6 +60,7 @@ describe('ListTenantMembersUseCase', () => {
       findIdentity: jest.fn(),
       linkIdentity: jest.fn(),
       createFromAuth0: jest.fn(),
+      updatePassword: jest.fn(),
     };
     useCase = new ListTenantMembersUseCase(
       membershipRepository,

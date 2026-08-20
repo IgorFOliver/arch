@@ -31,6 +31,7 @@ describe('FindOrCreateFromAuth0UseCase', () => {
       findIdentity: jest.fn(),
       linkIdentity: jest.fn(),
       createFromAuth0: jest.fn(),
+      updatePassword: jest.fn(),
     };
     useCase = new FindOrCreateFromAuth0UseCase(userRepository);
   });

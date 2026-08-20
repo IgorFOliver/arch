@@ -40,6 +40,7 @@ describe('LoginUseCase', () => {
       findIdentity: jest.fn(),
       linkIdentity: jest.fn(),
       createFromAuth0: jest.fn(),
+      updatePassword: jest.fn(),
     };
     createSessionUseCase = {
       execute: jest.fn(),

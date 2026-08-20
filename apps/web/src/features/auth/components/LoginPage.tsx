@@ -65,6 +65,14 @@ export function LoginPage() {
         onSubmit={onSubmit}
       />
       <p className="mt-4 text-center text-sm text-gray-600">
+        <Link
+          href="/forgot-password"
+          className="font-medium text-blue-600 underline underline-offset-2 hover:text-blue-700"
+        >
+          {t.forgotPassword}
+        </Link>
+      </p>
+      <p className="mt-2 text-center text-sm text-gray-600">
         {t.noAccount}{' '}
         <Link
           href="/signup"

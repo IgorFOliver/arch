@@ -32,3 +32,42 @@ export function createSignupSchema(messages: SignupValidationMessages) {
 }
 
 export type SignupFormValues = z.infer<ReturnType<typeof createSignupSchema>>;
+
+export interface ForgotPasswordValidationMessages {
+  emailInvalid: string;
+}
+
+export function createForgotPasswordSchema(
+  messages: ForgotPasswordValidationMessages,
+) {
+  return z.object({
+    email: z.email({ error: messages.emailInvalid }),
+  });
+}
+
+export type ForgotPasswordFormValues = z.infer<
+  ReturnType<typeof createForgotPasswordSchema>
+>;
+
+export interface ResetPasswordValidationMessages {
+  passwordMin: string;
+  passwordMismatch: string;
+}
+
+export function createResetPasswordSchema(
+  messages: ResetPasswordValidationMessages,
+) {
+  return z
+    .object({
+      password: z.string().min(8, { error: messages.passwordMin }),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      error: messages.passwordMismatch,
+      path: ['confirmPassword'],
+    });
+}
+
+export type ResetPasswordFormValues = z.infer<
+  ReturnType<typeof createResetPasswordSchema>
+>;

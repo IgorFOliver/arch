@@ -75,6 +75,7 @@ describe('CreateMembershipUseCase', () => {
       findIdentity: jest.fn(),
       linkIdentity: jest.fn(),
       createFromAuth0: jest.fn(),
+      updatePassword: jest.fn(),
     };
     permissionsService = new PermissionsService();
     auditPort = { record: jest.fn() };

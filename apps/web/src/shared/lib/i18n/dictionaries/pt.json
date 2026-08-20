@@ -11,6 +11,7 @@
       "submitLabel": "Entrar",
       "emailLabel": "E-mail",
       "passwordLabel": "Senha",
+      "forgotPassword": "Esqueceu sua senha?",
       "noAccount": "Ainda não tem uma conta?",
       "createOne": "Criar uma conta"
     },
@@ -25,9 +26,32 @@
       "haveAccount": "Já tem uma conta?",
       "signIn": "Entrar"
     },
+    "forgotPassword": {
+      "title": "Redefinir sua senha",
+      "description": "Informe seu e-mail e enviaremos um link para redefinir sua senha.",
+      "emailLabel": "E-mail",
+      "submitLabel": "Enviar link de redefinição",
+      "successMessage": "Verifique seu e-mail para as instruções de redefinição de senha.",
+      "backToLogin": "Voltar para o login"
+    },
+    "resetPassword": {
+      "title": "Escolha uma nova senha",
+      "passwordLabel": "Nova senha",
+      "confirmPasswordLabel": "Confirmar nova senha",
+      "submitLabel": "Salvar nova senha",
+      "missingTokenTitle": "Link de redefinição inválido",
+      "missingTokenDescription": "Este link de redefinição de senha está sem o token. Solicite um novo.",
+      "invalidTokenTitle": "Este link expirou",
+      "invalidTokenDescription": "Este link de redefinição de senha é inválido ou expirou. Solicite um novo.",
+      "requestNewLink": "Solicitar novo link",
+      "successTitle": "Senha atualizada",
+      "successDescription": "Sua senha foi redefinida com sucesso. Agora você pode entrar com sua nova senha.",
+      "goToLogin": "Ir para o login"
+    },
     "validation": {
       "emailInvalid": "Endereço de e-mail inválido.",
       "passwordMin": "A senha deve ter pelo menos 8 caracteres.",
+      "passwordMismatch": "As senhas não coincidem.",
       "nameRequired": "O nome é obrigatório.",
       "agreeToTermsRequired": "Você precisa concordar com os termos para continuar."
     },
@@ -37,7 +61,11 @@
       "emailTaken": "Já existe uma conta com este e-mail.",
       "signupFailed": "Não foi possível criar sua conta. Tente novamente.",
       "sessionLoadFailed": "Falha ao carregar a sessão atual.",
-      "accountInactive": "Sua conta foi bloqueada. Entre em contato com um administrador para obter ajuda."
+      "accountInactive": "Sua conta foi bloqueada. Entre em contato com um administrador para obter ajuda.",
+      "resetRequestFailed": "Algo deu errado. Tente novamente.",
+      "resetTokenInvalid": "Link de redefinição de senha inválido ou expirado.",
+      "resetFailed": "Não foi possível redefinir sua senha. Tente novamente.",
+      "tooManyRequests": "Muitas tentativas. Aguarde um momento e tente novamente."
     }
   },
   "shell": {

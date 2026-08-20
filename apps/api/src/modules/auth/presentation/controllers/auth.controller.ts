@@ -10,6 +10,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import type { Role } from '@4basearch/domain-types';
 import type { User } from '../../../users/domain/entities/user.entity';
@@ -22,12 +23,16 @@ import {
 import { LoginDto } from '../../application/dto/login.dto';
 import { SignupDto } from '../../application/dto/signup.dto';
 import { SwitchTenantDto } from '../../application/dto/switch-tenant.dto';
+import { ForgotPasswordDto } from '../../application/dto/forgot-password.dto';
+import { ResetPasswordDto } from '../../application/dto/reset-password.dto';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
 import { SignupUseCase } from '../../application/use-cases/signup.use-case';
 import { LogoutUseCase } from '../../application/use-cases/logout.use-case';
 import { CreateSessionUseCase } from '../../application/use-cases/create-session.use-case';
 import { SwitchActiveTenantUseCase } from '../../application/use-cases/switch-active-tenant.use-case';
 import { ListMyTenantsUseCase } from '../../application/use-cases/list-my-tenants.use-case';
+import { ForgotPasswordUseCase } from '../../application/use-cases/forgot-password.use-case';
+import { ResetPasswordUseCase } from '../../application/use-cases/reset-password.use-case';
 import { SessionGuard } from '../guards/session.guard';
 import { Auth0AuthGuard } from '../guards/auth0-auth.guard';
 import { CurrentUser } from '../decorators/current-user.decorator';
@@ -59,6 +64,8 @@ export class AuthController {
     private readonly resolveTenantContextUseCase: ResolveTenantContextUseCase,
     private readonly switchActiveTenantUseCase: SwitchActiveTenantUseCase,
     private readonly listMyTenantsUseCase: ListMyTenantsUseCase,
+    private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
     @Inject(PLATFORM_ADMIN_REPOSITORY)
     private readonly platformAdminRepository: PlatformAdminRepository,
   ) {}
@@ -91,6 +98,30 @@ export class AuthController {
     );
     const isPlatformAdmin = await this.resolveIsPlatformAdmin(user.id);
     return { user: { ...toPublicUser(user, role), isPlatformAdmin } };
+  }
+
+  // Generic response no matter what — same message whether the email
+  // exists, is on cooldown, or was never registered. Never let this
+  // endpoint answer "does this account exist?".
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  @UseGuards(ThrottlerGuard)
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  async forgotPassword(@Body() dto: ForgotPasswordDto) {
+    await this.forgotPasswordUseCase.execute(dto);
+    return {
+      message:
+        'If an account exists with this email, a password reset link has been sent.',
+    };
+  }
+
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @UseGuards(ThrottlerGuard)
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    await this.resetPasswordUseCase.execute(dto);
+    return { message: 'Your password has been reset successfully.' };
   }
 
   @UseGuards(SessionGuard)
